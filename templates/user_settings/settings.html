@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Settings · SugarLert{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/home/home.css' %}">
+{% endblock %}
+
+{% block content %}
+  <div class="page-header">
+    <div>
+      <p class="eyebrow">Account</p>
+      <h1>Settings</h1>
+    </div>
+    <a href="{% url 'home:home' %}" class="btn btn-ghost">Back to home</a>
+  </div>
+
+  <div class="settings-layout">
+    <section class="panel settings-section">
+      <div class="panel-header compact">
+        <div>
+          <p class="eyebrow">Profile</p>
+          <h2>Account information</h2>
+        </div>
+      </div>
+
+      <ul class="detail-list">
+        <li><span>Name</span><strong>{{ user.get_full_name|default:user.username }}</strong></li>
+        <li><span>Email</span><strong>{{ user.email }}</strong></li>
+        <li><span>Notifications</span><strong>Enabled</strong></li>
+      </ul>
+    </section>
+
+    <section class="panel settings-section">
+      <div class="panel-header compact">
+        <div>
+          <p class="eyebrow">Preferences</p>
+          <h2>Health tracking</h2>
+        </div>
+      </div>
+
+      <ul class="detail-list">
+        <li><span>Daily goal</span><strong>25g sugar</strong></li>
+        <li><span>Reminder cadence</span><strong>Daily</strong></li>
+        <li><span>Visual mode</span><strong>Comfortable</strong></li>
+      </ul>
+    </section>
+
+    <section class="panel settings-section">
+      <div class="panel-header compact">
+        <div>
+          <p class="eyebrow">Security</p>
+          <h2>Account protection</h2>
+        </div>
+      </div>
+
+      <ul class="detail-list">
+        <li><span>Password</span><strong>Managed securely</strong></li>
+        <li><span>Session</span><strong>Protected</strong></li>
+        <li><span>Access</span><strong>Authenticated</strong></li>
+      </ul>
+    </section>
+  </div>
+{% endblock %}

@@ -1,0 +1,99 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}SugarLert{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/login/login.css' %}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body class="{% if request.user.is_authenticated %}app-body{% else %}auth-body{% endif %}">
+  {% if request.user.is_authenticated %}
+    <div class="app-shell">
+      <header class="topbar-shell">
+        <div class="brand-wrap" aria-label="SugarLert home">
+          <div class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 40 40" width="34" height="34" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="20" cy="20" r="20" fill="#145C54"/>
+              <path d="M20 9c4.5 5.4 8 10.1 8 14.2A8 8 0 1 1 12 23.2C12 19.1 15.5 14.4 20 9Z" fill="#E2A63B"/>
+            </svg>
+          </div>
+          <div class="brand-copy">
+            <span class="brand-name">SugarLert</span>
+            <span class="brand-tag">Health tracking</span>
+          </div>
+        </div>
+
+        <nav class="main-nav" aria-label="Primary navigation">
+          <a href="{% url 'home:home' %}" class="nav-link {% if request.resolver_match.namespace == 'home' %}active{% endif %}">Home</a>
+          <a href="{% url 'profile:profile' %}" class="nav-link {% if request.resolver_match.namespace == 'profile' %}active{% endif %}">Profile</a>
+          <a href="{% url 'user_settings:settings' %}" class="nav-link {% if request.resolver_match.namespace == 'user_settings' %}active{% endif %}">Settings</a>
+        </nav>
+
+        <a href="{% url 'login:logout' %}" class="btn btn-ghost btn-small">Log out</a>
+      </header>
+
+      <main class="page-shell">
+        {% if messages %}
+          <ul class="messages">
+            {% for message in messages %}
+              <li class="message message--{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+  {% else %}
+    <main class="auth-shell">
+      <section class="auth-hero">
+        <div class="auth-logo">
+          <div class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 40 40" width="38" height="38" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="20" cy="20" r="20" fill="#145C54"/>
+              <path d="M20 9c4.5 5.4 8 10.1 8 14.2A8 8 0 1 1 12 23.2C12 19.1 15.5 14.4 20 9Z" fill="#E2A63B"/>
+            </svg>
+          </div>
+          <span class="brand-name">SugarLert</span>
+        </div>
+
+        <div class="hero-copy">
+          <p class="eyebrow eyebrow-light">Patient wellness</p>
+          <h1>Your daily sugar habits, made clear.</h1>
+          <p>Support healthier choices with a simple, dependable dashboard built for daily care and better decision-making.</p>
+        </div>
+
+        <div class="feature-list" aria-label="Health tracking benefits">
+          <div class="feature-item">
+            <strong>Daily Insights</strong>
+            <span>Track meals and sugar goals with confidence.</span>
+          </div>
+          <div class="feature-item">
+            <strong>Clear Progress</strong>
+            <span>Understand what’s within range and what needs attention.</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="auth-card">
+        {% if messages %}
+          <ul class="messages">
+            {% for message in messages %}
+              <li class="message message--{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+  {% endif %}
+
+  {% block content %}{% endblock %}
+
+  {% if request.user.is_authenticated %}
+      </main>
+    </div>
+  {% else %}
+      </section>
+    </main>
+  {% endif %}
+</body>
+</html>

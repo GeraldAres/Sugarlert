@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Profile · SugarLert{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/home/home.css' %}">
+{% endblock %}
+
+{% block content %}
+  <div class="page-header">
+    <div>
+      <p class="eyebrow">Patient profile</p>
+      <h1>Profile overview</h1>
+    </div>
+    <a href="{% url 'home:home' %}" class="btn btn-ghost">Back to home</a>
+  </div>
+
+  <div class="profile-layout">
+    <section class="panel profile-summary">
+      <div class="profile-identity">
+        <div class="avatar">{{ user.first_name|default:user.username|slice:':1'|upper }}</div>
+        <div>
+          <p class="eyebrow">Member</p>
+          <h2>{{ user.get_full_name|default:user.username }}</h2>
+        </div>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="label">Full name</span>
+          <strong>{{ user.get_full_name|default:user.username }}</strong>
+        </div>
+        <div class="info-item">
+          <span class="label">Email</span>
+          <strong>{{ user.email }}</strong>
+        </div>
+        <div class="info-item">
+          <span class="label">Username</span>
+          <strong>{{ user.username }}</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel detail-panel">
+      <div class="panel-header compact">
+        <div>
+          <p class="eyebrow">Account</p>
+          <h2>Care details</h2>
+        </div>
+      </div>
+
+      <ul class="detail-list">
+        <li>
+          <span>Primary contact</span>
+          <strong>{{ user.email }}</strong>
+        </li>
+        <li>
+          <span>Daily goal</span>
+          <strong>25g sugar</strong>
+        </li>
+        <li>
+          <span>Plan status</span>
+          <strong>Active</strong>
+        </li>
+      </ul>
+    </section>
+  </div>
+{% endblock %}

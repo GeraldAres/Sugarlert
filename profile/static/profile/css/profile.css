@@ -1,0 +1,48 @@
+.profile-shell {
+  width: min(520px, 100%);
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.profile-card {
+  background: #fff;
+  border: 1px solid #D8E3DE;
+  border-radius: 18px;
+  padding: 24px 20px;
+}
+
+.avatar {
+  width: 62px;
+  height: 62px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #145C54, #E2A63B);
+  color: white;
+  border-radius: 50%;
+  margin-bottom: 18px;
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.profile-info + .profile-info {
+  margin-top: 16px;
+}
+
+.label {
+  margin: 0 0 4px;
+  color: #5B6B65;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.profile-info h2,
+.profile-info p {
+  margin: 0;
+}

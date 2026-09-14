@@ -1,0 +1,38 @@
+.settings-shell {
+  width: min(520px, 100%);
+}
+
+.settings-card {
+  background: #fff;
+  border: 1px solid #D8E3DE;
+  border-radius: 18px;
+  padding: 22px 20px;
+}
+
+.settings-heading {
+  margin: 0 0 16px;
+  color: #145C54;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.settings-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 12px;
+  color: #16211D;
+}
+
+.settings-list li {
+  padding-bottom: 10px;
+  border-bottom: 1px solid #EEF3F0;
+}
+
+.settings-list li:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}

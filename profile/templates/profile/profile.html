@@ -1,0 +1,33 @@
+{% extends "accounts/base.html" %}
+{% load static %}
+
+{% block title %}Profile · SugarLert{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'profile/css/profile.css' %}">
+{% endblock %}
+
+{% block content %}
+  <div class="profile-shell">
+    <div class="page-header">
+      <h1>Profile</h1>
+      <a href="{% url 'home:home' %}" class="btn btn-secondary btn-small">Back to Home</a>
+    </div>
+
+    <div class="profile-card">
+      <div class="avatar">{{ user.first_name|default:user.username|slice:':1'|upper }}</div>
+      <div class="profile-info">
+        <p class="label">Full name</p>
+        <h2>{{ user.get_full_name|default:user.username }}</h2>
+      </div>
+      <div class="profile-info">
+        <p class="label">Email</p>
+        <p>{{ user.email }}</p>
+      </div>
+      <div class="profile-info">
+        <p class="label">Username</p>
+        <p>{{ user.username }}</p>
+      </div>
+    </div>
+  </div>
+{% endblock %}

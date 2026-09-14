@@ -1,0 +1,39 @@
+{% extends "accounts/base.html" %}
+{% load static %}
+
+{% block title %}Home · SugarLert{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'home/css/home.css' %}">
+{% endblock %}
+
+{% block content %}
+  <div class="dashboard-shell">
+    <div class="topbar">
+      <div>
+        <p class="eyebrow">Welcome back</p>
+        <h1>{{ user.first_name|default:user.username }}</h1>
+      </div>
+      <div class="topbar-actions">
+        <a href="{% url 'profile:profile' %}" class="btn btn-secondary btn-small">Profile</a>
+        <a href="{% url 'settings:settings' %}" class="btn btn-secondary btn-small">Settings</a>
+        <a href="{% url 'accounts:logout' %}" class="btn btn-tertiary btn-small">Log Out</a>
+      </div>
+    </div>
+
+    <section class="card-panel">
+      <h2>Today's sugar intake</h2>
+      <p class="subtitle">Your daily nutrition habits are ready to be tracked.</p>
+      <div class="metric-row">
+        <div class="metric">
+          <span class="metric-label">Logged today</span>
+          <strong>0g</strong>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Daily limit</span>
+          <strong>25g</strong>
+        </div>
+      </div>
+    </section>
+  </div>
+{% endblock %}

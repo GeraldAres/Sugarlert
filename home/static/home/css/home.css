@@ -1,0 +1,93 @@
+:root {
+  --card-bg: #FFFFFF;
+  --page-bg: #F5F9F7;
+  --primary: #145C54;
+  --primary-deep: #0D3F3A;
+  --gold: #E2A63B;
+  --text: #16211D;
+  --muted: #5B6B65;
+  --border: #D8E3DE;
+}
+
+.dashboard-shell {
+  width: min(860px, 100%);
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.topbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.card-panel {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 28px;
+  box-shadow: 0 10px 30px rgba(20, 92, 84, 0.04);
+}
+
+.metric-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 22px;
+}
+
+.metric {
+  background: #F7FBF9;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px 20px;
+}
+
+.metric-label {
+  display: block;
+  color: var(--muted);
+  font-size: 0.75rem;
+  margin-bottom: 8px;
+}
+
+.metric strong {
+  font-size: 1.75rem;
+  color: var(--primary-deep);
+}
+
+.btn-small {
+  width: auto;
+  padding: 10px 14px;
+  font-size: 0.82rem;
+}
+
+.btn-tertiary {
+  background: #F6EED8;
+  color: #6C4C0D;
+}
+
+@media (max-width: 640px) {
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .metric-row {
+    grid-template-columns: 1fr;
+  }
+}

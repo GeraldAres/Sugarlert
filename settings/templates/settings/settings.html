@@ -1,0 +1,27 @@
+{% extends "accounts/base.html" %}
+{% load static %}
+
+{% block title %}Settings · SugarLert{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'settings/css/settings.css' %}">
+{% endblock %}  
+
+{% block content %}
+  <div class="settings-shell">
+    <div class="page-header">
+      <h1>Settings</h1>
+      <a href="{% url 'home:home' %}" class="btn btn-secondary btn-small">Back to Home</a>
+    </div>
+
+    <div class="settings-card">
+      <p class="settings-heading">Account preferences</p>
+      <ul class="settings-list">
+        <li><strong>Name:</strong> {{ user.get_full_name|default:user.username }}</li>
+        <li><strong>Email:</strong> {{ user.email }}</li>
+        <li><strong>Notifications:</strong> Enabled</li>
+        <li><strong>Daily goal:</strong> 25g sugar</li>
+      </ul>
+    </div>
+  </div>
+{% endblock %}

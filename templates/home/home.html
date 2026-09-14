@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Home · SugarLert{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/home/home.css' %}">
+{% endblock %}
+
+{% block content %}
+  <div class="page-header">
+    <div>
+      <p class="eyebrow">Patient dashboard</p>
+      <h1>Welcome back, {{ user.first_name|default:user.username }}</h1>
+    </div>
+    <a href="{% url 'profile:profile' %}" class="btn btn-primary">View profile</a>
+  </div>
+
+  <section class="status-grid">
+    <article class="status-card tone-success">
+      <div class="card-label">Today</div>
+      <strong>0g</strong>
+      <span>Logged today</span>
+    </article>
+
+    <article class="status-card tone-neutral">
+      <div class="card-label">Daily target</div>
+      <strong>25g</strong>
+      <span>Recommended limit</span>
+    </article>
+
+    <article class="status-card tone-warning">
+      <div class="card-label">Status</div>
+      <strong>Within range</strong>
+      <span>No action needed</span>
+    </article>
+  </section>
+
+  <div class="content-grid">
+    <section class="panel panel-large">
+      <div class="panel-header">
+        <div>
+          <p class="eyebrow">Overview</p>
+          <h2>Today's progress</h2>
+        </div>
+        <span class="badge badge-success">Healthy</span>
+      </div>
+
+      <div class="empty-state">
+        <div class="empty-state-icon" aria-hidden="true">+</div>
+        <h3>No food entries yet</h3>
+        <p>Your nutrition activity will appear here once you start logging meals and snacks.</p>
+        <button type="button" class="btn btn-secondary">Add food entry</button>
+      </div>
+    </section>
+
+    <aside class="panel panel-side">
+      <div class="panel-header compact">
+        <div>
+          <p class="eyebrow">Care notes</p>
+          <h2>Health reminders</h2>
+        </div>
+      </div>
+
+      <ul class="checklist">
+        <li class="check-item success">
+          <span class="checkmark">✓</span>
+          <div>
+            <strong>Within daily sugar goal</strong>
+            <small>Keep balanced meals and hydration a priority.</small>
+          </div>
+        </li>
+        <li class="check-item neutral">
+          <span class="checkmark">i</span>
+          <div>
+            <strong>Review your nutrition plan</strong>
+            <small>Check in regularly to maintain healthy habits.</small>
+          </div>
+        </li>
+      </ul>
+    </aside>
+  </div>
+{% endblock %}

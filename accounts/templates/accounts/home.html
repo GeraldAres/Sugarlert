@@ -1,0 +1,9 @@
+{% extends "accounts/base.html" %}
+
+{% block title %}Home · SugarLert{% endblock %}
+
+{% block content %}
+  <h1>HOME SCREEN</h1>
+  <p class="subtitle">Welcome back, {{ request.user.first_name|default:request.user.username }}.</p>
+  <a href="{% url 'accounts:logout' %}" class="btn btn-secondary">Log Out</a>
+{% endblock %}
