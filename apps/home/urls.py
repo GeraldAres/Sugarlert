@@ -1,4 +1,3 @@
-from django.contrib.auth.decorators import login_required
 from django.urls import path
 
 from . import views
@@ -6,5 +5,5 @@ from . import views
 app_name = "home"
 
 urlpatterns = [
-    path("", login_required(views.home_view), name="home"),
+    path("", views.home_view, name="home"),
 ]

@@ -17,23 +17,23 @@
       <a href="{% url 'profile:profile' %}" class="btn btn-primary">View profile</a>
     </div>
 
-    <section class="status-grid">
+    <section class="status-grid" aria-label="Today's nutrition totals">
       <article class="status-card tone-success">
-        <div class="card-label">Today</div>
-        <strong>0g</strong>
-        <span>Logged today</span>
+        <div class="card-label">Sugar today</div>
+        <strong>{{ today_sugar|floatformat:1 }}g</strong>
+        <span>Total logged today</span>
       </article>
 
       <article class="status-card tone-neutral">
-        <div class="card-label">Daily target</div>
-        <strong>25g</strong>
-        <span>Recommended limit</span>
+        <div class="card-label">Carbs today</div>
+        <strong>{{ today_carbs|floatformat:1 }}g</strong>
+        <span>Total logged today</span>
       </article>
 
       <article class="status-card tone-warning">
-        <div class="card-label">Status</div>
-        <strong>Within range</strong>
-        <span>No action needed</span>
+        <div class="card-label">Food entries</div>
+        <strong>{{ today_food_count }}</strong>
+        <span>Logged today</span>
       </article>
     </section>
 
@@ -42,17 +42,63 @@
         <div class="panel-header">
           <div>
             <p class="eyebrow">Overview</p>
-            <h2>Today's progress</h2>
+            <h2>Today's food</h2>
           </div>
-          <span class="badge badge-success">Healthy</span>
+          <button type="button" class="btn btn-secondary" data-open-food-modal>
+            <span aria-hidden="true">+</span> Add Food
+          </button>
         </div>
 
-        <div class="empty-state">
-          <div class="empty-state-icon" aria-hidden="true">+</div>
-          <h3>No food entries yet</h3>
-          <p>Your nutrition activity will appear here once you start logging meals and snacks.</p>
-          <button type="button" class="btn btn-secondary">Add food entry</button>
-        </div>
+        {% if food_entries %}
+          <ul class="food-entry-list">
+            {% for entry in food_entries %}
+              <li class="food-entry-card">
+                <div class="food-entry-heading">
+                  <div>
+                    <h3>{{ entry.food_name }}</h3>
+                    <p>{{ entry.get_meal_type_display }} · {{ entry.serving_size|floatformat:-1 }} {{ entry.get_serving_unit_display }}</p>
+                  </div>
+                  <time datetime="{{ entry.eaten_at|date:'c' }}">{{ entry.eaten_at|date:"g:i A" }}</time>
+                </div>
+
+                <dl class="food-nutrients">
+                  <div>
+                    <dt>Sugar</dt>
+                    <dd>{{ entry.sugar_g|floatformat:1 }}g</dd>
+                  </div>
+                  <div>
+                    <dt>Carbs</dt>
+                    <dd>{{ entry.carbs_g|default_if_none:"0"|floatformat:1 }}g</dd>
+                  </div>
+                  {% if entry.calories != None %}
+                    <div>
+                      <dt>Calories</dt>
+                      <dd>{{ entry.calories|floatformat:0 }}</dd>
+                    </div>
+                  {% endif %}
+                </dl>
+
+                {% if entry.allergen_labels %}
+                  <div class="food-allergen-tags" aria-label="Allergens">
+                    {% for allergen in entry.allergen_labels %}
+                      <span class="food-allergen-tag">{{ allergen }}</span>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+
+                {% if entry.notes %}
+                  <p class="food-entry-note">{{ entry.notes }}</p>
+                {% endif %}
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <div class="empty-state food-empty-state">
+            <div class="empty-state-icon" aria-hidden="true">+</div>
+            <h3>No food logged today</h3>
+            <p>Your food entries, sugar, and carbohydrate totals will appear here.</p>
+          </div>
+        {% endif %}
       </section>
 
       <aside class="panel panel-side">
@@ -67,19 +113,117 @@
           <li class="check-item success">
             <span class="checkmark">✓</span>
             <div>
-              <strong>Within daily sugar goal</strong>
-              <small>Keep balanced meals and hydration a priority.</small>
+              <strong>Log meals consistently</strong>
+              <small>Add meals and snacks with their sugar and carbohydrate values.</small>
             </div>
           </li>
           <li class="check-item neutral">
             <span class="checkmark">i</span>
             <div>
-              <strong>Review your nutrition plan</strong>
-              <small>Check in regularly to maintain healthy habits.</small>
+              <strong>Keep food details together</strong>
+              <small>Add allergen information and notes when recording an entry.</small>
             </div>
           </li>
         </ul>
       </aside>
     </div>
   </div>
+
+  <dialog
+    id="food-entry-modal"
+    class="food-modal"
+    aria-labelledby="food-modal-title"
+    data-open-on-load="{% if open_food_modal %}true{% else %}false{% endif %}"
+  >
+    <div class="food-modal-content">
+      <div class="food-modal-header">
+        <div>
+          <p class="eyebrow">Nutrition log</p>
+          <h2 id="food-modal-title">Add Food</h2>
+          <p>Record the sugar and carbohydrate details for this serving.</p>
+        </div>
+        <button type="button" class="food-modal-close" aria-label="Close dialog" data-close-food-modal>&times;</button>
+      </div>
+
+      <form method="post" action="{% url 'home:home' %}" class="food-entry-form">
+        {% csrf_token %}
+        {% if add_food_form.non_field_errors %}
+          <div class="food-form-error" role="alert">
+            {% for error in add_food_form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+          </div>
+        {% endif %}
+
+        <div class="food-form-grid">
+          <div class="food-form-field food-form-field-full">
+            <label for="{{ add_food_form.food_name.id_for_label }}">{{ add_food_form.food_name.label }}</label>
+            {{ add_food_form.food_name }}
+            {% for error in add_food_form.food_name.errors %}<p class="food-field-error">{{ error }}</p>{% endfor %}
+          </div>
+
+          <div class="food-form-field">
+            <label for="{{ add_food_form.meal_type.id_for_label }}">{{ add_food_form.meal_type.label }}</label>
+            {{ add_food_form.meal_type }}
+            {% for error in add_food_form.meal_type.errors %}<p class="food-field-error">{{ error }}</p>{% endfor %}
+          </div>
+
+          <div class="food-form-field">
+            <label for="{{ add_food_form.eaten_at.id_for_label }}">{{ add_food_form.eaten_at.label }}</label>
+            {{ add_food_form.eaten_at }}
+            {% for error in add_food_form.eaten_at.errors %}<p class="food-field-error">{{ error }}</p>{% endfor %}
+          </div>
+
+          <div class="food-serving-fields food-form-field-full">
+            <div class="food-form-field">
+              <label for="{{ add_food_form.serving_size.id_for_label }}">Serving size</label>
+              {{ add_food_form.serving_size }}
+              {% for error in add_food_form.serving_size.errors %}<p class="food-field-error">{{ error }}</p>{% endfor %}
+            </div>
+            <div class="food-form-field">
+              <label for="{{ add_food_form.serving_unit.id_for_label }}">{{ add_food_form.serving_unit.label }}</label>
+              {{ add_food_form.serving_unit }}
+              {% for error in add_food_form.serving_unit.errors %}<p class="food-field-error">{{ error }}</p>{% endfor %}
+            </div>
+          </div>
+
+          <div class="food-form-field">
+            <label for="{{ add_food_form.sugar_g.id_for_label }}">{{ add_food_form.sugar_g.label }}</label>
+            {{ add_food_form.sugar_g }}
+            {% for error in add_food_form.sugar_g.errors %}<p class="food-field-error">{{ error }}</p>{% endfor %}
+          </div>
+
+          <div class="food-form-field">
+            <label for="{{ add_food_form.carbs_g.id_for_label }}">{{ add_food_form.carbs_g.label }}</label>
+            {{ add_food_form.carbs_g }}
+            {% for error in add_food_form.carbs_g.errors %}<p class="food-field-error">{{ error }}</p>{% endfor %}
+          </div>
+
+          <div class="food-form-field">
+            <label for="{{ add_food_form.calories.id_for_label }}">{{ add_food_form.calories.label }}</label>
+            {{ add_food_form.calories }}
+            {% for error in add_food_form.calories.errors %}<p class="food-field-error">{{ error }}</p>{% endfor %}
+          </div>
+
+          <fieldset class="food-allergen-fieldset food-form-field-full">
+            <legend>{{ add_food_form.allergens.label }}</legend>
+            <p class="food-field-hint">Choose “None” by itself, or select any applicable allergens.</p>
+            {{ add_food_form.allergens }}
+            {% for error in add_food_form.allergens.errors %}<p class="food-field-error">{{ error }}</p>{% endfor %}
+          </fieldset>
+
+          <div class="food-form-field food-form-field-full">
+            <label for="{{ add_food_form.notes.id_for_label }}">{{ add_food_form.notes.label }}</label>
+            {{ add_food_form.notes }}
+            {% for error in add_food_form.notes.errors %}<p class="food-field-error">{{ error }}</p>{% endfor %}
+          </div>
+        </div>
+
+        <div class="food-modal-actions">
+          <button type="button" class="btn btn-ghost" data-close-food-modal>Cancel</button>
+          <button type="submit" class="btn btn-secondary">Save Food</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <script src="{% static 'js/home/home.js' %}" defer></script>
 {% endblock %}
