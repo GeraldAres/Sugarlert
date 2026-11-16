@@ -1,8 +1,25 @@
- ARES_FINAL_PROJECT/BASELINE_COMMIT.txt   |   1 +
- ARES_FINAL_PROJECT/generate-evidence.ps1 |  78 +++++++++++
- static/css/home/home.css                 | 218 +++++++++++++++++++++++++++++++
- static/css/login/login.css               | 192 +++++++++++++++++++++++++++
- templates/home/home.html                 | 122 ++++++++---------
- templates/login/login.html               |   2 +-
- templates/register/register.html         |  11 +-
- 7 files changed, 559 insertions(+), 65 deletions(-)
+ .../APPLICATION_SCREENSHOTS/01_Login.png           | Bin 0 -> 108523 bytes
+ .../APPLICATION_SCREENSHOTS/02_Register.png        | Bin 0 -> 141321 bytes
+ .../APPLICATION_SCREENSHOTS/04_Profile.png         | Bin 0 -> 101210 bytes
+ .../APPLICATION_SCREENSHOTS/05_Settings.png        | Bin 0 -> 102881 bytes
+ ARES_FINAL_PROJECT/BASELINE_COMMIT.txt             |   1 +
+ ARES_FINAL_PROJECT/GIT_ALL_COMMITTED_CHANGES.patch | 702 +++++++++++++++++++++
+ ARES_FINAL_PROJECT/GIT_COMMIT_DETAILS.txt          |  38 ++
+ ARES_FINAL_PROJECT/GIT_DIFF_STAT.txt               |   8 +
+ ARES_FINAL_PROJECT/GIT_HISTORY.txt                 |   4 +
+ ARES_FINAL_PROJECT/GIT_STATUS.txt                  |   0
+ ARES_FINAL_PROJECT/GIT_UNCOMMITTED_CHANGES.patch   |   0
+ ARES_FINAL_PROJECT/generate-evidence.ps1           |  78 +++
+ apps/home/forms.py                                 |  62 ++
+ apps/home/migrations/0002_foodentry.py             |  40 ++
+ apps/home/models.py                                |  79 +++
+ apps/home/tests.py                                 | 104 +++
+ apps/home/urls.py                                  |   3 +-
+ apps/home/views.py                                 |  45 +-
+ static/css/home/home.css                           | 604 ++++++++++++++++++
+ static/css/login/login.css                         | 192 ++++++
+ static/js/home/home.js                             |  45 +-
+ templates/home/home.html                           | 268 ++++++--
+ templates/login/login.html                         |   2 +-
+ templates/register/register.html                   |  11 +-
+ 24 files changed, 2215 insertions(+), 71 deletions(-)

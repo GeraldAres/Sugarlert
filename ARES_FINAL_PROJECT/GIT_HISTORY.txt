@@ -1,3 +1,5 @@
+b05ab8b | GeraldAres | 2026-11-16 17:14:18 +0800 | feat(home): add food entry logging and daily nutrition totals
+f65b083 | GeraldAres | 2026-11-16 16:57:23 +0800 | docs(evidence): add application screenshots and git evidence exports
 b8c568f | GeraldAres | 2026-11-16 16:35:00 +0800 | style(signup): match signup page to home theme
 f41180b | GeraldAres | 2026-11-16 16:34:51 +0800 | style(login): match login page to home theme
 ebe0737 | GeraldAres | 2026-11-16 16:34:37 +0800 | style(home): refine responsive dashboard design
