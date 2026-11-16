@@ -1,0 +1,4 @@
+b8c568f | GeraldAres | 2026-11-16 16:35:00 +0800 | style(signup): match signup page to home theme
+f41180b | GeraldAres | 2026-11-16 16:34:51 +0800 | style(login): match login page to home theme
+ebe0737 | GeraldAres | 2026-11-16 16:34:37 +0800 | style(home): refine responsive dashboard design
+1b594cd | GeraldAres | 2026-11-16 16:16:32 +0800 | chore(evidence): add baseline and evidence export script

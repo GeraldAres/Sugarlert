@@ -1,0 +1,38 @@
+commit b8c568f0c16751a97c2999c78d17c90f5cf1b285
+Author: GeraldAres <Geraldbeyou@gmail.com>
+Date:   2026-11-16 16:35:00 +0800
+
+    style(signup): match signup page to home theme
+
+ templates/register/register.html | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
+
+commit f41180ba75b90ec574cb1005763b07cc7511548b
+Author: GeraldAres <Geraldbeyou@gmail.com>
+Date:   2026-11-16 16:34:51 +0800
+
+    style(login): match login page to home theme
+
+ static/css/login/login.css | 192 +++++++++++++++++++++++++++++++++++++++++++++
+ templates/login/login.html |   2 +-
+ 2 files changed, 193 insertions(+), 1 deletion(-)
+
+commit ebe0737a63fe27ec47e15727cbad6e73bec53361
+Author: GeraldAres <Geraldbeyou@gmail.com>
+Date:   2026-11-16 16:34:37 +0800
+
+    style(home): refine responsive dashboard design
+
+ static/css/home/home.css | 218 +++++++++++++++++++++++++++++++++++++++++++++++
+ templates/home/home.html | 122 +++++++++++++-------------
+ 2 files changed, 280 insertions(+), 60 deletions(-)
+
+commit 1b594cdc5de837faa36faccdc1408ddb62fd63cc
+Author: GeraldAres <Geraldbeyou@gmail.com>
+Date:   2026-11-16 16:16:32 +0800
+
+    chore(evidence): add baseline and evidence export script
+
+ ARES_FINAL_PROJECT/BASELINE_COMMIT.txt   |  1 +
+ ARES_FINAL_PROJECT/generate-evidence.ps1 | 78 ++++++++++++++++++++++++++++++++
+ 2 files changed, 79 insertions(+)

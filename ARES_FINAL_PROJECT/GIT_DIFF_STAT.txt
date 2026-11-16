@@ -1,0 +1,8 @@
+ ARES_FINAL_PROJECT/BASELINE_COMMIT.txt   |   1 +
+ ARES_FINAL_PROJECT/generate-evidence.ps1 |  78 +++++++++++
+ static/css/home/home.css                 | 218 +++++++++++++++++++++++++++++++
+ static/css/login/login.css               | 192 +++++++++++++++++++++++++++
+ templates/home/home.html                 | 122 ++++++++---------
+ templates/login/login.html               |   2 +-
+ templates/register/register.html         |  11 +-
+ 7 files changed, 559 insertions(+), 65 deletions(-)
