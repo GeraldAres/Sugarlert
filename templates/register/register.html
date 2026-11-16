@@ -3,10 +3,13 @@
 {% block title %}Create Account · SugarLert{% endblock %}
 
 {% block content %}
-  <h1>Create your account</h1>
-  <p class="subtitle">Set up SugarLert to start logging your sugar intake.</p>
+  <div class="auth-intro">
+    <p class="eyebrow eyebrow-dark">Create account</p>
+    <h1>Create your account</h1>
+    <p class="subtitle">Set up SugarLert to start logging your sugar intake.</p>
+  </div>
 
-  <form method="post" novalidate>
+  <form method="post" novalidate class="auth-form">
     {% csrf_token %}
 
     <div class="field">
@@ -36,5 +39,5 @@
     <button type="submit" class="btn btn-primary">Create Account</button>
   </form>
 
-  <p class="switch-link">Already have an account? <a href="{% url 'login:login' %}">Back to Login</a></p>
+  <p class="switch-link">Already have an account? <a href="{% url 'login:login' %}">Log in</a></p>
 {% endblock %}
