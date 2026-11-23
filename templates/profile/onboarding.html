@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ step_title }} · SugarLert{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/profile/profile.css' %}">
+{% endblock %}
+
+{% block content %}
+  <div class="profile-flow onboarding-flow">
+    <header class="flow-heading">
+      <p class="eyebrow">Personalize your experience</p>
+      <h1>{{ step_title }}</h1>
+      <p>Your answers stay private to your account and help SugarLert make your food tracking more relevant.</p>
+    </header>
+
+    <section class="flow-card" aria-label="Onboarding step {{ step }} of {{ step_count }}">
+      <div class="flow-progress-heading">
+        <span>Step {{ step }} of {{ step_count }}</span>
+        <span>{{ progress_percent }}% complete</span>
+      </div>
+      <div class="flow-progress-track" role="progressbar" aria-label="Onboarding progress" aria-valuemin="1" aria-valuemax="{{ step_count }}" aria-valuenow="{{ step }}">
+        <span style="width: {{ progress_percent }}%"></span>
+      </div>
+
+      <div class="wizard-step-content" data-step-content>
+        {% if step == 7 %}
+          <p class="flow-description">Review your answers. You can edit any section before finishing.</p>
+          <div class="review-sections">
+            {% for section in review_sections %}
+              <section class="review-section">
+                <div class="review-heading">
+                  <h2>{{ section.title }}</h2>
+                  <a href="{{ section.edit_url }}">Edit <span class="sr-only">{{ section.title }}</span></a>
+                </div>
+                <dl>
+                  {% for label, value in section.items %}
+                    <div><dt>{{ label }}</dt><dd>{{ value|default:"Not provided" }}</dd></div>
+                  {% endfor %}
+                </dl>
+              </section>
+            {% endfor %}
+          </div>
+          <form method="post" action="{% url 'onboarding:start' %}?step=7" class="flow-actions">
+            {% csrf_token %}
+            <input type="hidden" name="step" value="7">
+            <a class="btn btn-ghost" href="?step=6">Back</a>
+            <button type="submit" class="btn btn-primary" name="finish" value="1">Finish</button>
+          </form>
+        {% else %}
+          <p class="flow-description">
+            {% if step == 1 %}A few optional details help SugarLert organize your personal tracking experience. You can review or update them later.{% endif %}
+            {% if step == 2 %}Tell us how you would like to be addressed and share the basics you are comfortable providing.{% endif %}
+            {% if step == 3 %}These details provide context for your personal health tracking.{% endif %}
+            {% if step == 4 %}Share only what you are comfortable storing in your private profile.{% endif %}
+            {% if step == 5 %}Choose a goal and a starting daily sugar limit that works for your tracking.{% endif %}
+            {% if step == 6 %}Doctor details are optional and can be added or updated later from your Profile.{% endif %}
+          </p>
+
+          {% if step == 5 %}
+            <aside class="guidance-note">
+              <strong>A starting point, not a prescription</strong>
+              <p>WHO guidance recommends keeping free sugars below 10% of daily energy, with a lower target near 5% for additional benefit. At 2,000 kcal, 5% is about 25 g. Individual needs vary.</p>
+              <p>If you have diabetes, your doctor may recommend a different target.</p>
+            </aside>
+          {% endif %}
+
+          {% if step == 1 %}
+            <aside class="privacy-note">
+              <strong>Your privacy matters</strong>
+              <p>We store the health and contact details you choose to provide to personalize your SugarLert experience. Your profile is only shown to you when you are signed in.</p>
+            </aside>
+          {% endif %}
+
+          <form method="post" action="{% url 'onboarding:start' %}?step={{ step }}" class="profile-form">
+            {% csrf_token %}
+            <input type="hidden" name="step" value="{{ step }}">
+            {% if form.non_field_errors %}
+              <div class="form-errors" role="alert" aria-live="polite">
+                {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+              </div>
+            {% endif %}
+
+            {% if step == 1 %}
+              <div class="consent-panel">
+                <label class="consent-control" for="{{ form.accepted.id_for_label }}">
+                  {{ form.accepted }}
+                  <span>{{ form.accepted.label }}</span>
+                </label>
+                {% for error in form.accepted.errors %}<p class="field-error" role="alert">{{ error }}</p>{% endfor %}
+              </div>
+            {% else %}
+              {% for field in form %}
+                {% if field.name == "year_diagnosed" %}
+                  <div class="profile-field diagnosis-year-field" data-diagnosis-field>
+                {% elif field.field.widget.input_type == "radio" %}
+                  <fieldset class="profile-field choice-field">
+                {% else %}
+                  <div class="profile-field">
+                {% endif %}
+                  {% if field.field.widget.input_type == "radio" %}
+                    <legend>{{ field.label }}</legend>
+                  {% else %}
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                  {% endif %}
+                  {% if field.help_text %}<p class="field-help">{{ field.help_text }}</p>{% endif %}
+                  {{ field }}
+                  {% for error in field.errors %}<p class="field-error" role="alert" aria-live="polite">{{ error }}</p>{% endfor %}
+                {% if field.field.widget.input_type == "radio" %}
+                  </fieldset>
+                {% else %}
+                  </div>
+                {% endif %}
+              {% endfor %}
+            {% endif %}
+
+            <div class="flow-actions">
+              {% if back_step %}
+                <a class="btn btn-ghost" href="?step={{ back_step }}">Back</a>
+              {% else %}
+                <span></span>
+              {% endif %}
+              <div class="flow-next-actions">
+                {% if step == 6 %}
+                  <button type="submit" class="btn btn-ghost skip-doctor" name="skip_doctor" value="1">Skip for now</button>
+                {% endif %}
+                <button type="submit" class="btn btn-primary">
+                  {% if step == 6 %}Continue{% else %}Next{% endif %}
+                </button>
+              </div>
+            </div>
+          </form>
+        {% endif %}
+      </div>
+    </section>
+  </div>
+  <script src="{% static 'js/profile/onboarding.js' %}" defer></script>
+{% endblock %}

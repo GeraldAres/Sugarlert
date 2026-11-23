@@ -4,66 +4,93 @@
 {% block title %}Profile · SugarLert{% endblock %}
 
 {% block extra_css %}
-  <link rel="stylesheet" href="{% static 'css/home/home.css' %}">
+  <link rel="stylesheet" href="{% static 'css/profile/profile.css' %}">
 {% endblock %}
 
 {% block content %}
-  <div class="page-header">
-    <div>
-      <p class="eyebrow">Patient profile</p>
-      <h1>Profile overview</h1>
+  <div class="profile-page">
+    <header class="profile-page-heading">
+      <div>
+        <p class="eyebrow">Your health profile</p>
+        <h1>Profile</h1>
+      </div>
+      <a href="{% url 'home:home' %}" class="btn btn-ghost">Back to home</a>
+    </header>
+
+    <section class="profile-hero" aria-labelledby="profile-name">
+      <div class="profile-avatar" aria-hidden="true">{{ initials }}</div>
+      <div class="profile-hero-copy">
+        <p class="eyebrow">SugarLert member</p>
+        <h2 id="profile-name">{{ display_name }}</h2>
+        <p>
+          {% if profile.age != None %}{{ profile.age }} years old{% else %}Age not provided{% endif %}
+          <span aria-hidden="true">·</span>
+          Member since {{ user.date_joined|date:"F Y" }}
+        </p>
+      </div>
+      <a href="{% url 'profile:edit' section='about' %}" class="profile-edit-link">Edit profile</a>
+    </section>
+
+    <div class="profile-card-grid">
+      <section class="profile-card" aria-labelledby="body-card-title">
+        <header class="profile-card-heading">
+          <div><p class="eyebrow">Your measurements</p><h2 id="body-card-title">Body metrics</h2></div>
+          <a href="{% url 'profile:edit' section='body' %}">Edit</a>
+        </header>
+        <dl class="profile-details">
+          <div><dt>Height</dt><dd>{% if profile.height_cm %}{{ profile.height_cm|floatformat:-1 }} cm{% else %}Not provided{% endif %}</dd></div>
+          <div><dt>Weight</dt><dd>{% if profile.weight_kg %}{{ profile.weight_kg|floatformat:-1 }} kg{% else %}Not provided{% endif %}</dd></div>
+          <div><dt>BMI</dt><dd>{% if profile.bmi != None %}{{ profile.bmi }} <span>{{ profile.bmi_category }}</span>{% else %}Not available{% endif %}</dd></div>
+          <div><dt>Activity level</dt><dd>{{ profile.get_activity_level_display|default:"Not provided" }}</dd></div>
+        </dl>
+      </section>
+
+      <section class="profile-card" aria-labelledby="health-card-title">
+        <header class="profile-card-heading">
+          <div><p class="eyebrow">Health context</p><h2 id="health-card-title">Health background</h2></div>
+          <a href="{% url 'profile:edit' section='health' %}">Edit</a>
+        </header>
+        <dl class="profile-details">
+          <div><dt>Date of birth</dt><dd>{% if profile.date_of_birth %}{{ profile.date_of_birth|date:"F j, Y" }}{% else %}Not provided{% endif %}</dd></div>
+          <div><dt>Sex</dt><dd>{{ profile.get_sex_display|default:"Not provided" }}</dd></div>
+          <div><dt>Health status</dt><dd>{{ profile.get_health_status_display|default:"Not provided" }}</dd></div>
+          <div><dt>Year diagnosed</dt><dd>{{ profile.year_diagnosed|default:"Not provided" }}</dd></div>
+          <div><dt>Insulin or medication</dt><dd>{{ medication_display }}</dd></div>
+          <div><dt>Blood glucose tracking</dt><dd>{{ glucose_tracking_display }}</dd></div>
+        </dl>
+      </section>
+
+      <section class="profile-card" aria-labelledby="goals-card-title">
+        <header class="profile-card-heading">
+          <div><p class="eyebrow">Your preferences</p><h2 id="goals-card-title">Goals &amp; daily limit</h2></div>
+          <a href="{% url 'profile:edit' section='goals' %}">Edit</a>
+        </header>
+        <dl class="profile-details">
+          <div><dt>Primary goal</dt><dd>{{ profile.get_primary_goal_display|default:"Not provided" }}</dd></div>
+          <div><dt>Daily sugar limit</dt><dd>{{ profile.daily_sugar_limit_g }} g</dd></div>
+        </dl>
+      </section>
+
+      <section class="profile-card doctor-card" aria-labelledby="doctor-card-title">
+        <header class="profile-card-heading">
+          <div><p class="eyebrow">Care team</p><h2 id="doctor-card-title">Your doctor</h2></div>
+          <a href="{% url 'profile:edit' section='doctor' %}">{% if has_doctor_details %}Edit{% else %}Add{% endif %}</a>
+        </header>
+        {% if has_doctor_details %}
+          <dl class="profile-details">
+            <div><dt>Name</dt><dd>{{ profile.doctor_name|default:"Not provided" }}</dd></div>
+            <div><dt>Clinic</dt><dd>{{ profile.doctor_clinic|default:"Not provided" }}</dd></div>
+            <div><dt>Contact</dt><dd>{{ profile.doctor_contact|default:"Not provided" }}</dd></div>
+          </dl>
+        {% else %}
+          <div class="doctor-empty-state">
+            <p>Add your doctor’s details if you’d like to keep them with your health profile.</p>
+            <a href="{% url 'profile:edit' section='doctor' %}" class="btn btn-secondary">Add your doctor</a>
+          </div>
+        {% endif %}
+      </section>
     </div>
-    <a href="{% url 'home:home' %}" class="btn btn-ghost">Back to home</a>
-  </div>
 
-  <div class="profile-layout">
-    <section class="panel profile-summary">
-      <div class="profile-identity">
-        <div class="avatar">{{ user.first_name|default:user.username|slice:':1'|upper }}</div>
-        <div>
-          <p class="eyebrow">Member</p>
-          <h2>{{ user.get_full_name|default:user.username }}</h2>
-        </div>
-      </div>
-
-      <div class="info-grid">
-        <div class="info-item">
-          <span class="label">Full name</span>
-          <strong>{{ user.get_full_name|default:user.username }}</strong>
-        </div>
-        <div class="info-item">
-          <span class="label">Email</span>
-          <strong>{{ user.email }}</strong>
-        </div>
-        <div class="info-item">
-          <span class="label">Username</span>
-          <strong>{{ user.username }}</strong>
-        </div>
-      </div>
-    </section>
-
-    <section class="panel detail-panel">
-      <div class="panel-header compact">
-        <div>
-          <p class="eyebrow">Account</p>
-          <h2>Care details</h2>
-        </div>
-      </div>
-
-      <ul class="detail-list">
-        <li>
-          <span>Primary contact</span>
-          <strong>{{ user.email }}</strong>
-        </li>
-        <li>
-          <span>Daily goal</span>
-          <strong>25g sugar</strong>
-        </li>
-        <li>
-          <span>Plan status</span>
-          <strong>Active</strong>
-        </li>
-      </ul>
-    </section>
+    <p class="profile-disclaimer">BMI and sugar limits are informational tracking tools, not medical advice. Talk with your healthcare professional about personal targets.</p>
   </div>
 {% endblock %}

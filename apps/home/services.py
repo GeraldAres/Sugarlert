@@ -6,16 +6,19 @@ from django.db.models import Count, Sum
 from django.db.models.functions import TruncDate
 from django.utils import timezone
 
-from .models import FoodEntry, NutritionSettings
+from .models import FoodEntry, UserProfile
 
 
 ZERO = Decimal("0")
 
 
 def get_daily_sugar_limit(user):
-    return NutritionSettings.objects.filter(user=user).values_list(
+    limit = UserProfile.objects.filter(user=user).values_list(
         "daily_sugar_limit_g", flat=True
     ).first()
+    if limit is None or limit < 1:
+        limit = UserProfile.DEFAULT_DAILY_SUGAR_LIMIT_G
+    return Decimal(limit)
 
 
 def get_daily_aggregates(user, start_date, end_date):

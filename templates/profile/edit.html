@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Edit {{ section_title }} · SugarLert{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/profile/profile.css' %}">
+{% endblock %}
+
+{% block content %}
+  <div class="profile-flow">
+    <header class="flow-heading">
+      <p class="eyebrow">Your profile</p>
+      <h1>Edit {{ section_title }}</h1>
+      <p>Only you can view and update these details.</p>
+    </header>
+    <section class="flow-card edit-card">
+      <form method="post" class="profile-form">
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+          <div class="form-errors" role="alert" aria-live="polite">
+            {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+          </div>
+        {% endif %}
+        {% for field in form %}
+          {% if field.field.widget.input_type == "radio" %}
+            <fieldset class="profile-field choice-field">
+              <legend>{{ field.label }}</legend>
+              {{ field }}
+              {% for error in field.errors %}<p class="field-error" role="alert">{{ error }}</p>{% endfor %}
+            </fieldset>
+          {% else %}
+            <div class="profile-field{% if field.name == 'year_diagnosed' %} diagnosis-year-field{% endif %}"{% if field.name == "year_diagnosed" %} data-diagnosis-field{% endif %}>
+              <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+              {{ field }}
+              {% for error in field.errors %}<p class="field-error" role="alert">{{ error }}</p>{% endfor %}
+            </div>
+          {% endif %}
+        {% endfor %}
+        <div class="flow-actions">
+          <a href="{% url 'profile:profile' %}" class="btn btn-ghost">Cancel</a>
+          <button type="submit" class="btn btn-primary">Save changes</button>
+        </div>
+      </form>
+    </section>
+  </div>
+  <script src="{% static 'js/profile/onboarding.js' %}" defer></script>
+{% endblock %}

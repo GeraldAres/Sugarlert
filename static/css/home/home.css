@@ -57,6 +57,21 @@
   margin-bottom: 0;
 }
 
+.sugar-goal-progress {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--color-primary-soft);
+}
+
+.sugar-goal-progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--color-primary);
+  transition: width 240ms ease-out;
+}
+
 .home-dashboard .status-card,
 .home-dashboard .panel {
   border: 1px solid var(--home-border);

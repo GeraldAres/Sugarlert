@@ -1,7 +1,9 @@
 from django.contrib import messages
+from django.contrib.auth import login as auth_login
 from django.contrib.auth.models import User
 from django.shortcuts import redirect, render
 
+from apps.home.models import UserProfile
 from apps.login.forms import RegisterForm
 
 
@@ -16,14 +18,19 @@ def register_view(request):
             email = form.cleaned_data["email"]
             password = form.cleaned_data["password"]
 
-            User.objects.create_user(
+            user = User.objects.create_user(
                 username=email,
                 email=email,
                 password=password,
                 first_name=full_name,
             )
-            messages.success(request, "Account created. Please log in.")
-            return redirect("login:login")
+            UserProfile.objects.get_or_create(
+                user=user,
+                defaults={"display_name": full_name},
+            )
+            auth_login(request, user)
+            messages.success(request, "Your account is ready. Let's personalize your experience.")
+            return redirect("onboarding:start")
     else:
         form = RegisterForm()
 

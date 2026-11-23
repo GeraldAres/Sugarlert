@@ -1,32 +1,101 @@
+from decimal import Decimal
+
 from django.conf import settings
-from django.core.validators import MinValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils import timezone
 
 
 class UserProfile(models.Model):
-    class Gender(models.TextChoices):
+    DEFAULT_DAILY_SUGAR_LIMIT_G = 25
+
+    class Sex(models.TextChoices):
+        UNSET = "", "Select an option"
         MALE = "male", "Male"
         FEMALE = "female", "Female"
         OTHER = "other", "Other"
+        PREFER_NOT_TO_SAY = "prefer_not_to_say", "Prefer not to say"
 
-    class DiabetesType(models.TextChoices):
-        TYPE_1 = "type_1", "Type 1"
-        TYPE_2 = "type_2", "Type 2"
+    class HealthStatus(models.TextChoices):
+        UNSET = "", "Select an option"
+        TYPE_1 = "type_1", "Type 1 diabetes"
+        TYPE_2 = "type_2", "Type 2 diabetes"
         PREDIABETES = "prediabetes", "Prediabetes"
-        GESTATIONAL = "gestational", "Gestational"
-        NONE = "none", "None"
+        GESTATIONAL = "gestational", "Gestational diabetes"
+        NONE = "none", "No diagnosis / health-conscious"
+        PREFER_NOT_TO_SAY = "prefer_not_to_say", "Prefer not to say"
+
+    class PrimaryGoal(models.TextChoices):
+        UNSET = "", "Select an option"
+        MANAGE_DIABETES = "manage_diabetes", "Manage diabetes"
+        REDUCE_SUGAR = "reduce_sugar", "Reduce sugar intake"
+        LOSE_WEIGHT = "lose_weight", "Lose weight"
+        HEALTHY_EATING = "healthy_eating", "General healthy eating"
+
+    class ActivityLevel(models.TextChoices):
+        UNSET = "", "Select an option"
+        SEDENTARY = "sedentary", "Sedentary"
+        LIGHT = "light", "Light"
+        MODERATE = "moderate", "Moderate"
+        ACTIVE = "active", "Active"
 
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="profile",
     )
-    birth_date = models.DateField()
-    gender = models.CharField(max_length=10, choices=Gender.choices)
-    height_cm = models.DecimalField(max_digits=5, decimal_places=2)
-    weight_kg = models.DecimalField(max_digits=5, decimal_places=2)
-    diabetes_type = models.CharField(max_length=20, choices=DiabetesType.choices)
+    onboarding_completed = models.BooleanField(default=False)
+    onboarding_step = models.PositiveSmallIntegerField(default=1)
+    display_name = models.CharField(max_length=150, blank=True, default="")
+    date_of_birth = models.DateField(null=True, blank=True)
+    sex = models.CharField(max_length=20, choices=Sex.choices, blank=True, default="")
+    height_cm = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(50), MaxValueValidator(250)],
+    )
+    weight_kg = models.DecimalField(
+        max_digits=6,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(20), MaxValueValidator(400)],
+    )
+    health_status = models.CharField(
+        max_length=24,
+        choices=HealthStatus.choices,
+        blank=True,
+        default="",
+    )
+    year_diagnosed = models.PositiveSmallIntegerField(
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(1900)],
+    )
+    uses_insulin_or_medication = models.BooleanField(null=True, blank=True)
+    tracks_blood_glucose = models.BooleanField(null=True, blank=True)
+    primary_goal = models.CharField(
+        max_length=24,
+        choices=PrimaryGoal.choices,
+        blank=True,
+        default="",
+    )
+    activity_level = models.CharField(
+        max_length=16,
+        choices=ActivityLevel.choices,
+        blank=True,
+        default="",
+    )
+    daily_sugar_limit_g = models.PositiveIntegerField(
+        default=DEFAULT_DAILY_SUGAR_LIMIT_G,
+        validators=[MinValueValidator(1), MaxValueValidator(500)],
+    )
+    doctor_name = models.CharField(max_length=150, blank=True)
+    doctor_clinic = models.CharField(max_length=200, blank=True)
+    doctor_contact = models.CharField(max_length=100, blank=True)
+    consent_accepted_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -38,6 +107,35 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return f"{self.user.get_username()} profile"
+
+    @property
+    def age(self):
+        if not self.date_of_birth:
+            return None
+        today = timezone.localdate()
+        return today.year - self.date_of_birth.year - (
+            (today.month, today.day) < (self.date_of_birth.month, self.date_of_birth.day)
+        )
+
+    @property
+    def bmi(self):
+        if not self.height_cm or not self.weight_kg or self.height_cm <= 0:
+            return None
+        height_m = self.height_cm / Decimal("100")
+        return (self.weight_kg / (height_m * height_m)).quantize(Decimal("0.1"))
+
+    @property
+    def bmi_category(self):
+        value = self.bmi
+        if value is None:
+            return None
+        if value < Decimal("18.5"):
+            return "Underweight"
+        if value < Decimal("25"):
+            return "Healthy range"
+        if value < Decimal("30"):
+            return "Overweight"
+        return "Obesity range"
 
 
 class NutritionSettings(models.Model):

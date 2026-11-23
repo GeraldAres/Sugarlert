@@ -6,5 +6,6 @@ from . import views
 app_name = "profile"
 
 urlpatterns = [
-    path("", login_required(views.profile_view), name="profile"),
+    path("", views.profile_view, name="profile"),
+    path("edit/<slug:section>/", views.profile_edit_view, name="edit"),
 ]

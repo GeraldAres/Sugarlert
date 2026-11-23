@@ -35,7 +35,10 @@
           <a href="{% url 'user_settings:settings' %}" class="nav-link {% if request.resolver_match.namespace == 'user_settings' %}active{% endif %}">Settings</a>
         </nav>
 
-        <a href="{% url 'login:logout' %}" class="btn btn-ghost btn-small">Log out</a>
+        <form method="post" action="{% url 'login:logout' %}" class="logout-form">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-ghost btn-small">Log out</button>
+        </form>
       </header>
 
       <main class="page-shell">

@@ -5,12 +5,13 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-from .models import FoodEntry
+from .models import FoodEntry, UserProfile
 
 
 class FoodEntryHomeTests(TestCase):
     def setUp(self):
         self.user = get_user_model().objects.create_user(username="food-owner")
+        UserProfile.objects.filter(user=self.user).update(onboarding_completed=True)
         self.home_url = reverse("home:home")
 
     def entry_data(self, **overrides):

@@ -12,9 +12,10 @@ from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from .forms import FoodEntryForm
-from .models import FoodEntry
+from .models import FoodEntry, UserProfile
 from .services import (
     get_chart_statistics,
+    get_daily_sugar_limit,
     get_day_totals,
     get_month_calendar,
 )
@@ -42,17 +43,34 @@ def home_view(request):
         sugar=Sum("sugar_g"),
         carbs=Sum("carbs_g"),
     )
+    today_sugar = totals["sugar"] or Decimal("0")
+    profile = getattr(request, "user_profile", None)
+    if profile is None:
+        profile, _ = UserProfile.objects.get_or_create(user=request.user)
+    daily_sugar_limit = get_daily_sugar_limit(request.user)
+    sugar_progress_percent = min(
+        100,
+        int(today_sugar * 100 / daily_sugar_limit),
+    )
+    display_name = (
+        profile.display_name
+        or request.user.get_full_name()
+        or request.user.get_username()
+    )
 
     return render(
         request,
         "home/home.html",
         {
             "user": request.user,
+            "display_name": display_name,
             "add_food_form": form,
             "food_entries": today_entries,
-            "today_sugar": totals["sugar"] or Decimal("0"),
+            "today_sugar": today_sugar,
             "today_carbs": totals["carbs"] or Decimal("0"),
             "today_food_count": today_entries.count(),
+            "daily_sugar_limit": daily_sugar_limit,
+            "sugar_progress_percent": sugar_progress_percent,
             "open_food_modal": open_food_modal,
         },
     )

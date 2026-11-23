@@ -11,6 +11,10 @@ urlpatterns = [
     path("register/", include("apps.register.urls")),
     path("home/", include("apps.home.urls")),
     path("stats/", include(("apps.home.stats_urls", "stats"), namespace="stats")),
+    path(
+        "onboarding/",
+        include(("apps.profile.onboarding_urls", "onboarding"), namespace="onboarding"),
+    ),
     path("profile/", include("apps.profile.urls")),
     path("settings/", include("apps.user_settings.urls")),
 ]

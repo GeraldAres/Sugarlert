@@ -12,7 +12,7 @@
     <div class="page-header">
       <div>
         <p class="eyebrow">Patient dashboard</p>
-        <h1>Welcome back, {{ user.first_name|default:user.username }}</h1>
+        <h1>Welcome back, {{ display_name }}</h1>
       </div>
       <div class="home-header-actions">
         <a href="{% url 'stats:stats' %}" class="btn btn-secondary">View stats</a>
@@ -24,7 +24,17 @@
       <article class="status-card tone-success">
         <div class="card-label">Sugar today</div>
         <strong>{{ today_sugar|floatformat:1 }}g</strong>
-        <span>Total logged today</span>
+        <span>of {{ daily_sugar_limit }}g daily limit</span>
+        <div
+          class="sugar-goal-progress"
+          role="progressbar"
+          aria-label="Daily sugar limit progress"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow="{{ sugar_progress_percent }}"
+        >
+          <span style="width: {{ sugar_progress_percent }}%"></span>
+        </div>
       </article>
 
       <article class="status-card tone-neutral">

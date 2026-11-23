@@ -6,8 +6,8 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-from .models import FoodEntry, NutritionSettings
-from .services import get_calendar_day_status, get_chart_statistics
+from .models import FoodEntry, UserProfile
+from .services import get_calendar_day_status, get_chart_statistics, get_month_calendar
 
 
 class StatisticsServiceTests(TestCase):
@@ -32,11 +32,9 @@ class StatisticsServiceTests(TestCase):
         )
 
     def set_sugar_limit(self, user, limit="12"):
-        NutritionSettings.objects.create(
-            user=user,
-            daily_sugar_limit_g=limit,
-            daily_carb_limit_g=100,
-            daily_calorie_limit=2000,
+        UserProfile.objects.filter(user=user).update(
+            daily_sugar_limit_g=int(limit),
+            onboarding_completed=True,
         )
 
     def test_chart_aggregation_summarizes_days_and_scopes_data_to_user(self):
@@ -87,11 +85,23 @@ class StatisticsServiceTests(TestCase):
             ("no_limit", "No limit set", "•"),
         )
 
+    def test_calendar_month_navigation_crosses_year_boundaries(self):
+        january = get_month_calendar(self.user, 2025, 1)
+        december = get_month_calendar(self.user, 2024, 12)
+
+        self.assertEqual(january["previous_month"], "2024-12")
+        self.assertEqual(january["next_month"], "2025-02")
+        self.assertEqual(december["previous_month"], "2024-11")
+        self.assertEqual(december["next_month"], "2025-01")
+
 
 class StatisticsViewTests(TestCase):
     def setUp(self):
         self.user = get_user_model().objects.create_user(username="stats-view-owner")
         self.other_user = get_user_model().objects.create_user(username="stats-view-other")
+        UserProfile.objects.filter(user__in=(self.user, self.other_user)).update(
+            onboarding_completed=True
+        )
         self.today = timezone.localdate()
 
     def create_entry(self, user, day, food_name, sugar="3"):
@@ -142,12 +152,7 @@ class StatisticsViewTests(TestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_calendar_renders_only_owned_day_status_and_navigation(self):
-        NutritionSettings.objects.create(
-            user=self.user,
-            daily_sugar_limit_g=10,
-            daily_carb_limit_g=100,
-            daily_calorie_limit=2000,
-        )
+        UserProfile.objects.filter(user=self.user).update(daily_sugar_limit_g=10)
         self.create_entry(self.user, self.today, "My logged breakfast", "3")
         self.create_entry(self.other_user, self.today, "Private other breakfast", "80")
         self.client.force_login(self.user)
