@@ -1,25 +1,69 @@
- .../APPLICATION_SCREENSHOTS/01_Login.png           | Bin 0 -> 108523 bytes
- .../APPLICATION_SCREENSHOTS/02_Register.png        | Bin 0 -> 141321 bytes
- .../APPLICATION_SCREENSHOTS/04_Profile.png         | Bin 0 -> 101210 bytes
- .../APPLICATION_SCREENSHOTS/05_Settings.png        | Bin 0 -> 102881 bytes
- ARES_FINAL_PROJECT/BASELINE_COMMIT.txt             |   1 +
- ARES_FINAL_PROJECT/GIT_ALL_COMMITTED_CHANGES.patch | 702 +++++++++++++++++++++
- ARES_FINAL_PROJECT/GIT_COMMIT_DETAILS.txt          |  38 ++
- ARES_FINAL_PROJECT/GIT_DIFF_STAT.txt               |   8 +
- ARES_FINAL_PROJECT/GIT_HISTORY.txt                 |   4 +
- ARES_FINAL_PROJECT/GIT_STATUS.txt                  |   0
- ARES_FINAL_PROJECT/GIT_UNCOMMITTED_CHANGES.patch   |   0
- ARES_FINAL_PROJECT/generate-evidence.ps1           |  78 +++
- apps/home/forms.py                                 |  62 ++
- apps/home/migrations/0002_foodentry.py             |  40 ++
- apps/home/models.py                                |  79 +++
- apps/home/tests.py                                 | 104 +++
- apps/home/urls.py                                  |   3 +-
- apps/home/views.py                                 |  45 +-
- static/css/home/home.css                           | 604 ++++++++++++++++++
- static/css/login/login.css                         | 192 ++++++
- static/js/home/home.js                             |  45 +-
- templates/home/home.html                           | 268 ++++++--
- templates/login/login.html                         |   2 +-
- templates/register/register.html                   |  11 +-
- 24 files changed, 2215 insertions(+), 71 deletions(-)
+Committed changes from baseline 9b1ee095d0a7b8feda77347461f6e7331ffc6aef to HEAD:
+ .env.example                                       |     2 +-
+ .gitignore                                         |     2 +
+ .../APPLICATION_SCREENSHOTS/01_Login.png           |   Bin 0 -> 108523 bytes
+ .../APPLICATION_SCREENSHOTS/02_Register.png        |   Bin 0 -> 141321 bytes
+ .../APPLICATION_SCREENSHOTS/04_Profile.png         |   Bin 0 -> 101210 bytes
+ .../APPLICATION_SCREENSHOTS/05_Settings.png        |   Bin 0 -> 102881 bytes
+ ARES_FINAL_PROJECT/BASELINE_COMMIT.txt             |     1 +
+ ARES_FINAL_PROJECT/GIT_ALL_COMMITTED_CHANGES.patch | 10566 +++++++++++++++++++
+ ARES_FINAL_PROJECT/GIT_COMMIT_DETAILS.txt          |    73 +
+ ARES_FINAL_PROJECT/GIT_DIFF_STAT.txt               |    25 +
+ ARES_FINAL_PROJECT/GIT_HISTORY.txt                 |     6 +
+ ARES_FINAL_PROJECT/GIT_STATUS.txt                  |     4 +
+ ARES_FINAL_PROJECT/GIT_UNCOMMITTED_CHANGES.patch   | 10115 ++++++++++++++++++
+ ARES_FINAL_PROJECT/generate-evidence.ps1           |    78 +
+ README.md                                          |    50 +-
+ accounts/tests.py                                  |    16 +-
+ apps/home/apps.py                                  |     3 +
+ apps/home/forms.py                                 |    62 +
+ apps/home/management/__init__.py                   |     0
+ apps/home/management/commands/__init__.py          |     0
+ apps/home/management/commands/check_db.py          |   245 +
+ apps/home/management/commands/seed_demo.py         |    98 +
+ apps/home/migrations/0002_foodentry.py             |    40 +
+ .../home/migrations/0003_userprofile_onboarding.py |   139 +
+ apps/home/models.py                                |   199 +-
+ apps/home/services.py                              |   169 +
+ apps/home/signals.py                               |    14 +
+ apps/home/stats_urls.py                            |    16 +
+ apps/home/test_management_commands.py              |    44 +
+ apps/home/test_statistics.py                       |   208 +
+ apps/home/tests.py                                 |   144 +
+ apps/home/urls.py                                  |     3 +-
+ apps/home/views.py                                 |   190 +-
+ apps/login/views.py                                |    10 +
+ apps/profile/__init__.py                           |     1 +
+ apps/profile/forms.py                              |   165 +
+ apps/profile/middleware.py                         |    33 +
+ apps/profile/onboarding_urls.py                    |     9 +
+ apps/profile/tests.py                              |   393 +
+ apps/profile/urls.py                               |     3 +-
+ apps/profile/views.py                              |   266 +-
+ apps/register/views.py                             |    13 +-
+ config/settings.py                                 |    48 +-
+ config/urls.py                                     |     5 +
+ static/css/home/home.css                           |   642 ++
+ static/css/login/login.css                         |   192 +
+ static/css/profile/profile.css                     |   534 +
+ static/css/stats/stats.css                         |   622 ++
+ static/js/home/home.js                             |    45 +-
+ static/js/profile/onboarding.js                    |    26 +
+ static/js/stats/stats.js                           |   157 +
+ templates/base.html                                |     6 +-
+ templates/home/home.html                           |   279 +-
+ templates/login/login.html                         |     2 +-
+ templates/profile/edit.html                        |    48 +
+ templates/profile/onboarding.html                  |   139 +
+ templates/profile/profile.html                     |   131 +-
+ templates/register/register.html                   |    11 +-
+ templates/stats/day.html                           |    82 +
+ templates/stats/stats.html                         |   155 +
+ 60 files changed, 26371 insertions(+), 158 deletions(-)
+
+Tracked worktree changes (generated evidence outputs and .env excluded):
+ ARES_FINAL_PROJECT/generate-evidence.ps1 | 281 +++++++++++++++++++++++++++----
+ 1 file changed, 244 insertions(+), 37 deletions(-)
+
+Untracked files included in GIT_UNCOMMITTED_CHANGES.patch:
+(None.)

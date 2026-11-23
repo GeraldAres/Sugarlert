@@ -1,6 +1,40 @@
-b05ab8b | GeraldAres | 2026-11-16 17:14:18 +0800 | feat(home): add food entry logging and daily nutrition totals
-f65b083 | GeraldAres | 2026-11-16 16:57:23 +0800 | docs(evidence): add application screenshots and git evidence exports
-b8c568f | GeraldAres | 2026-11-16 16:35:00 +0800 | style(signup): match signup page to home theme
-f41180b | GeraldAres | 2026-11-16 16:34:51 +0800 | style(login): match login page to home theme
-ebe0737 | GeraldAres | 2026-11-16 16:34:37 +0800 | style(home): refine responsive dashboard design
-1b594cd | GeraldAres | 2026-11-16 16:16:32 +0800 | chore(evidence): add baseline and evidence export script
+488d03c2655e5f1d9de60007c1bd04c724432572 | GeraldAres | 2026-11-23T17:38:29+08:00 | Feat(onboarding): Introduce user to app
+f2a52bc5976820d5d28fce00fe5384cab12e8216 | GeraldAres | 2026-11-23T17:29:53+08:00 | Agent host session 23094f5d-d451-4812-a1ba-c237015d367b - turn 7
+70986c1af50e3cf2082ffda4465019bc801a5f53 | GeraldAres | 2026-11-23T17:29:53+08:00 | Agent host session 23094f5d-d451-4812-a1ba-c237015d367b - turn 7 start
+be282d31994b50fd7e84b54a4a1a3aecd4ee59ef | GeraldAres | 2026-11-23T17:29:32+08:00 | Agent host session 23094f5d-d451-4812-a1ba-c237015d367b - turn 6
+3b6c2b40cf59dfaf8a1409c8058a63bf9312cb9b | GeraldAres | 2026-11-23T17:29:31+08:00 | Agent host session 23094f5d-d451-4812-a1ba-c237015d367b - turn 6 start
+6f76eba3453d449c44c4a168b6bb3efd67422c9e | GeraldAres | 2026-11-23T17:18:39+08:00 | Agent host session 23094f5d-d451-4812-a1ba-c237015d367b - turn 5
+4fe4aa2a84e6a3921d07d3daafa98ffae6ba7646 | GeraldAres | 2026-11-23T17:18:39+08:00 | Agent host session 23094f5d-d451-4812-a1ba-c237015d367b - turn 5 start
+5324ae531005ea6f7da1acf85e13b1534a0e0efd | GeraldAres | 2026-11-23T16:52:46+08:00 | Agent host session 23094f5d-d451-4812-a1ba-c237015d367b - turn 4
+a8563dc8d6502d28332515fdd49d65475123f08c | GeraldAres | 2026-11-23T16:52:46+08:00 | Agent host session 23094f5d-d451-4812-a1ba-c237015d367b - turn 4 start
+cbbe641365eaeea2193ee094d6d929487533de50 | GeraldAres | 2026-11-23T16:23:51+08:00 | test(home): cover daily totals and empty state
+68dccc490049db759351b2f6087b6918cc971f23 | GeraldAres | 2026-11-23T16:20:37+08:00 | Agent host session 23094f5d-d451-4812-a1ba-c237015d367b - turn 3
+522b5e9bec5581b7f367427c864d6b9546ab4750 | GeraldAres | 2026-11-23T16:20:36+08:00 | Agent host session 23094f5d-d451-4812-a1ba-c237015d367b - turn 3 start
+8982ec0ba4506de007b49c8ba4cc226b25339f10 | GeraldAres | 2026-11-23T16:17:25+08:00 | Agent host session 23094f5d-d451-4812-a1ba-c237015d367b - turn 2
+a97a65e3f151ecfe9a69545ebc8332d7fd350836 | GeraldAres | 2026-11-23T16:17:25+08:00 | Agent host session 23094f5d-d451-4812-a1ba-c237015d367b - turn 2 start
+64945e5548c136c423cb6d23cdcee3b5bc18f1dc | GeraldAres | 2026-11-23T16:08:49+08:00 | Agent host session 23094f5d-d451-4812-a1ba-c237015d367b - turn 1
+262bc455608b490f2149cd02f8da79ecd1f12d63 | GeraldAres | 2026-11-23T16:08:48+08:00 | Agent host session 23094f5d-d451-4812-a1ba-c237015d367b - turn 1 start
+ffd79af68ef845d9f4f1b614e18668e21eaa6650 | GeraldAres | 2026-11-23T15:34:18+08:00 | Agent host session 23094f5d-d451-4812-a1ba-c237015d367b - baseline checkpoint
+3301e34881ece0eb9d6eb4b6ce9433a17aaa8ec0 | GeraldAres | 2026-11-16T17:22:03+08:00 | docs(evidence): refresh git evidence exports
+b05ab8b8589ba6925714a2f00ad54d7538dfb569 | GeraldAres | 2026-11-16T17:14:18+08:00 | feat(home): add food entry logging and daily nutrition totals
+716f84330e1e28510bf7cd134239cd731166642d | GeraldAres | 2026-11-16T17:12:38+08:00 | Agent host session 8dfcf7c0-d37f-46f6-aa29-48520d18ef96 - turn 6
+4856aa2b3d448f4d256f5ac3f225bc537e58e82f | GeraldAres | 2026-11-16T17:12:37+08:00 | Agent host session 8dfcf7c0-d37f-46f6-aa29-48520d18ef96 - turn 6 start
+f65b08339182385bf3bd153142eb7f44bfd7a9d8 | GeraldAres | 2026-11-16T16:57:23+08:00 | docs(evidence): add application screenshots and git evidence exports
+6d81a930da35db6342e6738f5262c48dc1193be5 | GeraldAres | 2026-11-16T16:55:34+08:00 | Agent host session 8dfcf7c0-d37f-46f6-aa29-48520d18ef96 - turn 5
+daa068af0af78cb48be0f01f2c58a1644bb13bf5 | GeraldAres | 2026-11-16T16:55:34+08:00 | Agent host session 8dfcf7c0-d37f-46f6-aa29-48520d18ef96 - turn 5 start
+9aba8c2e3105f51ecc241a73bca43e4beedfa67e | GeraldAres | 2026-11-16T16:45:02+08:00 | Agent host session 8dfcf7c0-d37f-46f6-aa29-48520d18ef96 - turn 4
+7f9ed908ee19b9ab01daf4ce6980d025f52d2928 | GeraldAres | 2026-11-16T16:45:02+08:00 | Agent host session 8dfcf7c0-d37f-46f6-aa29-48520d18ef96 - turn 4 start
+b8c568f0c16751a97c2999c78d17c90f5cf1b285 | GeraldAres | 2026-11-16T16:35:00+08:00 | style(signup): match signup page to home theme
+f41180ba75b90ec574cb1005763b07cc7511548b | GeraldAres | 2026-11-16T16:34:51+08:00 | style(login): match login page to home theme
+ebe0737a63fe27ec47e15727cbad6e73bec53361 | GeraldAres | 2026-11-16T16:34:37+08:00 | style(home): refine responsive dashboard design
+74f735483df1a2dc01e1b0be1fbfd09f6e3b401b | GeraldAres | 2026-11-16T16:34:07+08:00 | Agent host session 8dfcf7c0-d37f-46f6-aa29-48520d18ef96 - turn 3
+d699ae0b9ac7ce488f29d5f1e3874216e4159757 | GeraldAres | 2026-11-16T16:34:06+08:00 | Agent host session 8dfcf7c0-d37f-46f6-aa29-48520d18ef96 - turn 3 start
+75a67e5369a928760565c4ab6752401fa66c2f2a | GeraldAres | 2026-11-16T16:26:26+08:00 | Agent host session 8dfcf7c0-d37f-46f6-aa29-48520d18ef96 - turn 2
+2ebc8ae6ae8b071f4dabd5be13f2b9689fa08712 | GeraldAres | 2026-11-16T16:26:25+08:00 | Agent host session 8dfcf7c0-d37f-46f6-aa29-48520d18ef96 - turn 2 start
+1b594cdc5de837faa36faccdc1408ddb62fd63cc | GeraldAres | 2026-11-16T16:16:32+08:00 | chore(evidence): add baseline and evidence export script
+2c16cd9ecfd5b28634fe0d79d58363245268d39e | GeraldAres | 2026-11-16T16:14:53+08:00 | Agent host session 8dfcf7c0-d37f-46f6-aa29-48520d18ef96 - turn 1
+3f631e2d4e8359b24f3520e6e5a60bbe433910c1 | GeraldAres | 2026-11-16T16:14:53+08:00 | Agent host session 8dfcf7c0-d37f-46f6-aa29-48520d18ef96 - turn 1 start
+79934f5dfeeb447593089d16625972077a6fe1f5 | GeraldAres | 2026-11-16T15:59:37+08:00 | Agent host session 8dfcf7c0-d37f-46f6-aa29-48520d18ef96 - baseline checkpoint
+9b1ee095d0a7b8feda77347461f6e7331ffc6aef | GeraldAres | 2026-09-28T15:08:44+08:00 | feat: added ERD in models.py
+85778243b375069873dae140ffb82bda9be5ac61 | GeraldAres | 2026-09-21T17:53:23+08:00 | feat: added ERD
+27f203980b9a4d9009eba2a7a749e59b28d3ccca | LAB27_USER ON WS06 | 2026-09-14T17:04:08+08:00 | feat: initialize SugarLert project

@@ -3,76 +3,283 @@ $ErrorActionPreference = 'Stop'
 $ProjectRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 $EvidenceDirectory = $PSScriptRoot
 $BaselinePath = Join-Path $EvidenceDirectory 'BASELINE_COMMIT.txt'
+$Utf8NoBom = New-Object System.Text.UTF8Encoding $false
+$script:TotalRedactions = 0
 
-if (-not (Test-Path $BaselinePath)) {
+if (-not (Test-Path -LiteralPath $BaselinePath)) {
     throw "Baseline file not found: $BaselinePath"
 }
 
-$BaselineText = Get-Content -Path $BaselinePath -Raw
+$BaselineText = [System.IO.File]::ReadAllText($BaselinePath)
 $BaselineHash = ($BaselineText -split ' \| ', 2)[0].Trim()
 if ($BaselineHash -notmatch '^[0-9a-fA-F]{40,64}$') {
     throw "BASELINE_COMMIT.txt does not start with a valid full Git hash."
 }
 
-$Utf8NoBom = New-Object System.Text.UTF8Encoding $false
+& git -C $ProjectRoot cat-file -e "$BaselineHash^{commit}" 2>$null
+if ($LASTEXITCODE -ne 0) {
+    throw "The recorded baseline commit is not present in this repository."
+}
 
-function Export-GitOutput {
+& git -C $ProjectRoot merge-base --is-ancestor $BaselineHash HEAD 2>$null
+if ($LASTEXITCODE -ne 0) {
+    throw "The recorded baseline is not an ancestor of HEAD; refusing to invent or replace it."
+}
+
+function Invoke-GitText {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string[]]$GitArguments,
+        [switch]$AllowDiffExitCode
+    )
+
+    $Output = & git -C $ProjectRoot @GitArguments 2>&1
+    $ExitCode = $LASTEXITCODE
+    if ($ExitCode -ne 0 -and -not ($AllowDiffExitCode -and $ExitCode -eq 1)) {
+        throw "Git command failed: git $($GitArguments -join ' ')"
+    }
+
+    return (@($Output | ForEach-Object { [string]$_ }) -join "`r`n")
+}
+
+function Protect-Output {
+    param([Parameter(Mandatory = $true)][string]$Content)
+
+    $Patterns = @(
+        @{
+            Regex = '(?im)^(\s*[+-]?\s*DATABASE_URL\s*=\s*)(?!\[REDACTED\]\s*$).*$'
+            Replacement = '$1[REDACTED]'
+        },
+        @{
+            Regex = '(?im)^(\s*[+-]?\s*SECRET_KEY\s*=\s*)(?!\[REDACTED\]\s*$).*$'
+            Replacement = '$1[REDACTED]'
+        },
+        @{
+            Regex = '(?im)(\b(?:DATABASE_URL|SECRET_KEY|[A-Z0-9_.-]*(?:PASSWORD|PASSWD|TOKEN|API[_-]?KEY|SECRET)[A-Z0-9_.-]*)\b["'']?\s*[:=]\s*)(?!\[REDACTED\])[^\s,;]+'
+            Replacement = '$1[REDACTED]'
+        },
+        @{
+            Regex = '(?i)\bpostgres(?:ql)?://(?!\[REDACTED\])[^\s]+'
+            Replacement = 'postgresql://[REDACTED]'
+        },
+        @{
+            Regex = '(?i)\bBearer\s+(?!\[REDACTED\])[A-Za-z0-9._~+/-]+=*'
+            Replacement = 'Bearer [REDACTED]'
+        },
+        @{
+            Regex = '(?i)\b(?:gh[pousr]_[A-Za-z0-9_]{20,}|github_pat_[A-Za-z0-9_]{20,}|AKIA[0-9A-Z]{16})\b'
+            Replacement = '[REDACTED]'
+        }
+    )
+
+    foreach ($Pattern in $Patterns) {
+        $Matches = [regex]::Matches($Content, $Pattern.Regex)
+        $script:TotalRedactions += $Matches.Count
+        $Content = [regex]::Replace($Content, $Pattern.Regex, $Pattern.Replacement)
+    }
+
+    $ResidualPatterns = @(
+        '(?im)^\s*[+-]?\s*DATABASE_URL\s*=\s*(?!\[REDACTED\])\S+',
+        '(?im)^\s*[+-]?\s*SECRET_KEY\s*=\s*(?!\[REDACTED\])\S+',
+        '(?im)\b(?:DATABASE_URL|SECRET_KEY|[A-Z0-9_.-]*(?:PASSWORD|PASSWD|TOKEN|API[_-]?KEY|SECRET)[A-Z0-9_.-]*)\b["'']?\s*[:=]\s*(?!\[REDACTED\])\S+',
+        '(?i)\bpostgres(?:ql)?://[^/\s:]+:[^@/\s]+@',
+        '(?i)\bBearer\s+(?!\[REDACTED\])[A-Za-z0-9._~+/-]+=*',
+        '(?i)\b(?:gh[pousr]_[A-Za-z0-9_]{20,}|github_pat_[A-Za-z0-9_]{20,}|AKIA[0-9A-Z]{16})\b'
+    )
+    foreach ($Pattern in $ResidualPatterns) {
+        if ([regex]::IsMatch($Content, $Pattern)) {
+            throw "Sensitive content remained after redaction; refusing to save evidence."
+        }
+    }
+
+    return $Content
+}
+
+function Write-EvidenceFile {
     param(
         [Parameter(Mandatory = $true)]
         [string]$FileName,
         [Parameter(Mandatory = $true)]
-        [string[]]$GitArguments
+        [string]$Content
     )
 
-    $Output = & git -C $ProjectRoot @GitArguments
-    if ($LASTEXITCODE -ne 0) {
-        throw "Git command failed while generating $FileName."
+    if ([string]::IsNullOrWhiteSpace($Content)) {
+        $Content = "(No data.)"
     }
 
-    $Content = ($Output | ForEach-Object { [string]$_ }) -join "`r`n"
-    [System.IO.File]::WriteAllText(
-        (Join-Path $EvidenceDirectory $FileName),
-        $Content,
-        $Utf8NoBom
-    )
+    $BeforeRedactions = $script:TotalRedactions
+    $SafeContent = Protect-Output $Content
+    $FilePath = Join-Path $EvidenceDirectory $FileName
+    [System.IO.File]::WriteAllText($FilePath, $SafeContent, $Utf8NoBom)
+    $Count = $script:TotalRedactions - $BeforeRedactions
+    Write-Output ("{0}: {1} bytes; {2} redaction(s)" -f $FileName, (Get-Item -LiteralPath $FilePath).Length, $Count)
 }
 
-Export-GitOutput 'GIT_HISTORY.txt' @(
-    'log',
-    '--since=2026-11-16 15:00:00',
-    '--until=2026-11-16 18:00:00',
-    '--date=iso',
-    '--pretty=format:%h | %an | %ad | %s'
-)
+function Get-UntrackedPaths {
+    $Output = Invoke-GitText -GitArguments @('ls-files', '--others', '--exclude-standard')
+    if ([string]::IsNullOrWhiteSpace($Output)) {
+        return @()
+    }
 
-Export-GitOutput 'GIT_COMMIT_DETAILS.txt' @(
+    return @($Output -split "`r?`n" | Where-Object {
+        $_ -and
+        ([System.IO.Path]::GetFileName($_) -ne '.env') -and
+        ($_ -notlike 'ARES_FINAL_PROJECT/GIT_*.txt') -and
+        ($_ -notlike 'ARES_FINAL_PROJECT/GIT_*.patch')
+    })
+}
+
+$AllCommits = Invoke-GitText -GitArguments @(
     'log',
-    '--since=2026-11-16 15:00:00',
-    '--until=2026-11-16 18:00:00',
+    '--all',
+    '--date=iso-strict',
+    '--pretty=format:%H | %an | %ad | %s'
+)
+$CommitDetails = Invoke-GitText -GitArguments @(
+    'log',
+    '--all',
     '--stat',
-    '--date=iso'
+    '--date=iso-strict',
+    '--pretty=fuller'
 )
-
-Export-GitOutput 'GIT_ALL_COMMITTED_CHANGES.patch' @(
+$CommittedPatch = Invoke-GitText -GitArguments @(
     'diff',
-    '--binary',
-    "$BaselineHash..HEAD"
+    '--no-ext-diff',
+    "$BaselineHash..HEAD",
+    '--',
+    '.',
+    ':(exclude).env',
+    ':(exclude)**/.env'
 )
 
-Export-GitOutput 'GIT_UNCOMMITTED_CHANGES.patch' @(
+$EvidenceOutputExclusions = @(
+    ':(exclude).env',
+    ':(exclude)**/.env',
+    ':(exclude)ARES_FINAL_PROJECT/GIT_*.txt',
+    ':(exclude)ARES_FINAL_PROJECT/GIT_*.patch'
+)
+$TrackedWorktreePatch = Invoke-GitText -GitArguments (@(
     'diff',
-    '--binary'
-)
+    '--no-ext-diff',
+    'HEAD',
+    '--',
+    '.'
+) + $EvidenceOutputExclusions)
 
-Export-GitOutput 'GIT_STATUS.txt' @(
-    'status',
-    '--short'
-)
+$UntrackedPaths = Get-UntrackedPaths
+$UntrackedPatchParts = @()
+foreach ($RelativePath in $UntrackedPaths) {
+    $FullPath = Join-Path $ProjectRoot $RelativePath
+    $UntrackedOutput = & git -C $ProjectRoot diff --no-index --no-ext-diff -- /dev/null $FullPath 2>&1
+    $UntrackedExitCode = $LASTEXITCODE
+    if ($UntrackedExitCode -ne 0 -and $UntrackedExitCode -ne 1) {
+        throw "Unable to include untracked file in the evidence patch: $RelativePath"
+    }
+    $UntrackedPatchParts += @($UntrackedOutput | ForEach-Object { [string]$_ }) -join "`r`n"
+}
 
-Export-GitOutput 'GIT_DIFF_STAT.txt' @(
+$UncommittedPatchParts = @(
+    "# Uncommitted tracked changes relative to HEAD, plus untracked files."
+    "# .env files and generated GIT_* evidence outputs are excluded."
+)
+if (-not [string]::IsNullOrWhiteSpace($TrackedWorktreePatch)) {
+    $UncommittedPatchParts += $TrackedWorktreePatch
+}
+if ($UntrackedPatchParts.Count -gt 0) {
+    $UncommittedPatchParts += $UntrackedPatchParts
+}
+$UncommittedPatch = $UncommittedPatchParts -join "`r`n"
+
+$CommittedStat = Invoke-GitText -GitArguments @(
     'diff',
     "$BaselineHash..HEAD",
-    '--stat'
+    '--stat',
+    '--',
+    '.',
+    ':(exclude).env',
+    ':(exclude)**/.env'
 )
+$TrackedWorktreeStat = Invoke-GitText -GitArguments (@(
+    'diff',
+    'HEAD',
+    '--stat',
+    '--',
+    '.'
+) + $EvidenceOutputExclusions)
+$StatParts = @(
+    "Committed changes from baseline $BaselineHash to HEAD:"
+    $(if ($CommittedStat) { $CommittedStat } else { "(No committed changes.)" })
+    ""
+    "Tracked worktree changes (generated evidence outputs and .env excluded):"
+    $(if ($TrackedWorktreeStat) { $TrackedWorktreeStat } else { "(No tracked worktree changes.)" })
+    ""
+    "Untracked files included in GIT_UNCOMMITTED_CHANGES.patch:"
+    $(if ($UntrackedPaths.Count -gt 0) { $UntrackedPaths -join "`r`n" } else { "(None.)" })
+)
+$DiffStat = $StatParts -join "`r`n"
 
-Write-Output "Evidence exports written to $EvidenceDirectory"
+$GeneratedOutputs = [ordered]@{
+    'GIT_HISTORY.txt' = $AllCommits
+    'GIT_COMMIT_DETAILS.txt' = $CommitDetails
+    'GIT_ALL_COMMITTED_CHANGES.patch' = $CommittedPatch
+    'GIT_UNCOMMITTED_CHANGES.patch' = $UncommittedPatch
+    'GIT_DIFF_STAT.txt' = $DiffStat
+}
+foreach ($FileName in $GeneratedOutputs.Keys) {
+    Write-EvidenceFile -FileName $FileName -Content $GeneratedOutputs[$FileName]
+}
+
+$StatusPath = Join-Path $EvidenceDirectory 'GIT_STATUS.txt'
+[System.IO.File]::WriteAllText($StatusPath, "Refreshing status snapshot.", $Utf8NoBom)
+$StatusText = Invoke-GitText -GitArguments @('status', '--short', '--untracked-files=all')
+$StatusSafe = Protect-Output $StatusText
+[System.IO.File]::WriteAllText($StatusPath, $StatusSafe, $Utf8NoBom)
+Write-Output ("GIT_STATUS.txt: {0} bytes; status snapshot captured after other outputs" -f (Get-Item -LiteralPath $StatusPath).Length)
+
+$HeadHash = Invoke-GitText -GitArguments @('rev-parse', 'HEAD')
+$CommitCount = [int](Invoke-GitText -GitArguments @('rev-list', '--all', '--count'))
+$HistoryLines = @($AllCommits -split "`r?`n" | Where-Object { $_ })
+if ($HistoryLines.Count -ne $CommitCount) {
+    throw "The history output does not contain every commit reachable from repository refs."
+}
+if ($AllCommits -notmatch [regex]::Escape($HeadHash)) {
+    throw "The latest HEAD hash is missing from GIT_HISTORY.txt."
+}
+
+$CurrentStatus = Invoke-GitText -GitArguments @('status', '--short', '--untracked-files=all')
+if ($CurrentStatus -ne $StatusSafe) {
+    throw "GIT_STATUS.txt is stale compared with the current git status."
+}
+
+$OutputNames = @(
+    'GIT_HISTORY.txt',
+    'GIT_COMMIT_DETAILS.txt',
+    'GIT_ALL_COMMITTED_CHANGES.patch',
+    'GIT_UNCOMMITTED_CHANGES.patch',
+    'GIT_DIFF_STAT.txt',
+    'GIT_STATUS.txt'
+)
+foreach ($FileName in $OutputNames) {
+    $FilePath = Join-Path $EvidenceDirectory $FileName
+    if (-not (Test-Path -LiteralPath $FilePath) -or (Get-Item -LiteralPath $FilePath).Length -eq 0) {
+        throw "Evidence output is missing or empty: $FileName"
+    }
+    $SavedContent = [System.IO.File]::ReadAllText($FilePath)
+    $BeforeRedactions = $script:TotalRedactions
+    $CheckedContent = Protect-Output $SavedContent
+    if ($CheckedContent -ne $SavedContent) {
+        throw "Sensitive content was found in the saved file $FileName; inspect the sanitizer."
+    }
+}
+
+$BaselineBefore = $script:TotalRedactions
+$SafeBaselineCheck = Protect-Output $BaselineText
+if ($SafeBaselineCheck -ne $BaselineText) {
+    throw "The baseline file contains sensitive-looking data; it was not modified."
+}
+
+Write-Output ("Baseline preserved: {0}" -f $BaselineHash)
+Write-Output ("HEAD included: {0}" -f $HeadHash)
+Write-Output ("Commit count in history: {0}" -f $CommitCount)
+Write-Output ("Total redactions applied: {0}" -f $script:TotalRedactions)
+Write-Output "Evidence outputs regenerated and verified."
