@@ -744,3 +744,26 @@ textarea.food-input {
   border-bottom: 1px solid #EEF3F0;
 }
 .settings-list li:last-child { border-bottom: none; padding-bottom: 0; }
+
+.home-dashboard .page-header > .home-header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.home-dashboard .home-header-actions .btn {
+  width: auto;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .home-dashboard .home-header-actions {
+    width: 100%;
+  }
+
+  .home-dashboard .home-header-actions .btn {
+    flex: 1;
+    padding-inline: 0.75rem;
+  }
+}

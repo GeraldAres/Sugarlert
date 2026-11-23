@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
@@ -27,10 +29,47 @@ class FoodEntryHomeTests(TestCase):
         data.update(overrides)
         return data
 
+    def create_logged_entry(self, **overrides):
+        data = {
+            "user": self.user,
+            "food_name": "Logged food",
+            "meal_type": FoodEntry.MealType.SNACK,
+            "serving_size": 1,
+            "serving_unit": FoodEntry.ServingUnit.PIECE,
+            "sugar_g": "2.5",
+            "carbs_g": "12",
+            "calories": "100",
+            "eaten_at": timezone.now(),
+        }
+        data.update(overrides)
+        return FoodEntry.objects.create(**data)
+
     def test_home_requires_login(self):
         response = self.client.get(self.home_url)
 
         self.assertRedirects(response, f"{reverse('login:login')}?next={self.home_url}")
+
+    def test_home_renders_today_totals_for_existing_entries(self):
+        self.create_logged_entry(food_name="Breakfast", sugar_g="4.25", carbs_g="20")
+        self.create_logged_entry(food_name="Snack", sugar_g="2.5", carbs_g=None)
+        self.client.force_login(self.user)
+
+        response = self.client.get(self.home_url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["today_sugar"], Decimal("6.75"))
+        self.assertEqual(response.context["today_carbs"], Decimal("20"))
+        self.assertEqual(response.context["today_food_count"], 2)
+
+    def test_home_renders_zero_totals_when_user_has_no_entries(self):
+        self.client.force_login(self.user)
+
+        response = self.client.get(self.home_url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["today_sugar"], Decimal("0"))
+        self.assertEqual(response.context["today_carbs"], Decimal("0"))
+        self.assertEqual(response.context["today_food_count"], 0)
 
     def test_valid_entry_is_saved_for_logged_in_user(self):
         self.client.force_login(self.user)

@@ -1,7 +1,6 @@
-# SugarLert (Login / Register / Home)
+# SugarLert (Food Logging & Statistics)
 
-Scope: this is the initial Django skeleton for SugarLert, covering only the
-Login, Register, and Home screens and the navigation flow between them.
+SugarLert helps users log food and review daily sugar and calorie intake.
 
 ## Setup
 
@@ -27,6 +26,12 @@ Then open http://127.0.0.1:8000/ — it redirects to the Login screen.
    (`@login_required`); visiting it directly while logged out redirects to
    `/login/`.
 4. `/logout/` — ends the session and returns to `/login/`.
+5. `/stats/` — review 7- or 30-day sugar and calorie trends and browse the
+   monthly food-log calendar. Select a date to view its entries and daily
+   totals; entries can be deleted from the day detail page.
+
+The Statistics screen loads chart data from `/stats/data/` and uses Chart.js
+from a CDN. The calendar and day details use the existing `FoodEntry` records.
 
 ## Notes
 

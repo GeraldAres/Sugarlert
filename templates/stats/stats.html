@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Statistics & History · SugarLert{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/stats/stats.css' %}">
+{% endblock %}
+
+{% block content %}
+  <div class="stats-page" data-chart-url="{{ chart_data_url }}">
+    <header class="page-header stats-page-header">
+      <div>
+        <p class="eyebrow">Your nutrition history</p>
+        <h1>Statistics &amp; History</h1>
+        <p class="stats-intro">Review your daily sugar and calorie intake and explore past food logs.</p>
+      </div>
+      <a href="{% url 'home:home' %}?add_food=1" class="btn btn-primary">Log food</a>
+    </header>
+
+    {% if not has_entries %}
+      <section class="stats-empty-state" aria-labelledby="stats-empty-title">
+        <span class="stats-empty-icon" aria-hidden="true">+</span>
+        <div>
+          <h2 id="stats-empty-title">No entries yet</h2>
+          <p>Log your first food to see your intake trends and build your history.</p>
+        </div>
+        <a href="{% url 'home:home' %}?add_food=1" class="btn btn-secondary">Log your first food</a>
+      </section>
+    {% endif %}
+
+    <section class="stats-summary-grid" aria-label="Selected period summary">
+      <article class="stats-summary-card">
+        <span>Average daily sugar</span>
+        <strong data-summary="average-sugar">—</strong>
+        <small>Across the selected days</small>
+      </article>
+      <article class="stats-summary-card">
+        <span>Average daily calories</span>
+        <strong data-summary="average-calories">—</strong>
+        <small>Across the selected days</small>
+      </article>
+      <article class="stats-summary-card">
+        <span>Highest-sugar day</span>
+        <strong data-summary="highest-sugar">—</strong>
+        <small data-summary="highest-sugar-date">No logged days</small>
+      </article>
+      <article class="stats-summary-card">
+        <span>Total entries</span>
+        <strong data-summary="total-entries">—</strong>
+        <small>In the selected period</small>
+      </article>
+      <article class="stats-summary-card">
+        <span>Days over limit</span>
+        <strong data-summary="days-over-limit">—</strong>
+        <small data-summary="limit-caption">Set a daily sugar limit to track this</small>
+      </article>
+    </section>
+
+    <section class="stats-panel" aria-labelledby="trend-title">
+      <div class="stats-panel-heading">
+        <div>
+          <p class="eyebrow">Trends</p>
+          <h2 id="trend-title">Daily intake</h2>
+        </div>
+        <div class="range-toggle" role="group" aria-label="Chart date range">
+          <button type="button" class="range-button is-active" data-range="7" aria-pressed="true">Last 7 days</button>
+          <button type="button" class="range-button" data-range="30" aria-pressed="false">Last 30 days</button>
+        </div>
+      </div>
+      <p class="chart-status" data-chart-status role="status" aria-live="polite">Loading your trends…</p>
+      <div class="chart-error" data-chart-error role="alert" hidden>
+        <p>We couldn’t load your statistics. Check your connection and try again.</p>
+        <button type="button" class="btn btn-ghost" data-chart-retry>Try again</button>
+      </div>
+      <div class="stats-chart-grid" data-chart-content hidden>
+        <div class="chart-card">
+          <h3>Sugar intake <span>(g)</span></h3>
+          <div class="chart-canvas-wrap">
+            <canvas data-sugar-chart role="img" aria-label="Bar chart showing daily sugar intake"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <h3>Calories <span>(kcal)</span></h3>
+          <div class="chart-canvas-wrap">
+            <canvas data-calorie-chart role="img" aria-label="Bar chart showing daily calories"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="stats-panel calendar-panel" aria-labelledby="calendar-title">
+      <div class="stats-panel-heading">
+        <div>
+          <p class="eyebrow">Food log</p>
+          <h2 id="calendar-title">{{ calendar.month_label }}</h2>
+        </div>
+        <nav class="month-navigation" aria-label="Calendar month navigation">
+          {% if calendar.previous_month %}
+            <a class="month-nav-link" href="?month={{ calendar.previous_month }}" aria-label="Previous month">‹</a>
+          {% else %}
+            <span class="month-nav-link is-disabled" aria-hidden="true">‹</span>
+          {% endif %}
+          {% if calendar.next_month %}
+            <a class="month-nav-link" href="?month={{ calendar.next_month }}" aria-label="Next month">›</a>
+          {% else %}
+            <span class="month-nav-link is-disabled" aria-hidden="true">›</span>
+          {% endif %}
+        </nav>
+      </div>
+
+      <ul class="calendar-legend" aria-label="Daily sugar status key">
+        <li class="status-under"><span aria-hidden="true">✓</span> Under limit</li>
+        <li class="status-near"><span aria-hidden="true">!</span> Near limit</li>
+        <li class="status-over"><span aria-hidden="true">!</span> Over limit</li>
+        <li class="status-none"><span aria-hidden="true">—</span> No entries</li>
+      </ul>
+
+      <div class="calendar-grid" role="grid" aria-labelledby="calendar-title">
+        <div class="calendar-week-row calendar-weekday-row" role="row">
+          {% for weekday in calendar.weekdays %}
+            <div class="calendar-weekday" role="columnheader">{{ weekday }}</div>
+          {% endfor %}
+        </div>
+        {% for week in calendar_days %}
+          <div class="calendar-week-row" role="row">
+            {% for cell in week %}
+              {% if cell %}
+                <a
+                  class="calendar-day status-{{ cell.status }}{% if cell.date == today %} is-today{% endif %}"
+                  href="{% url 'stats:day' day=cell.date|date:'Y-m-d' %}"
+                  role="gridcell"
+                  aria-label="{{ cell.date|date:'F j, Y' }}: {{ cell.status_label }}, {{ cell.entry_count }} entr{{ cell.entry_count|pluralize:'y,ies' }}{% if cell.entry_count %}, {{ cell.sugar|floatformat:1 }} grams sugar{% endif %}"
+                >
+                  <span class="calendar-day-number">{{ cell.number }}</span>
+                  <span class="calendar-day-status"><span aria-hidden="true">{{ cell.status_icon }}</span> {{ cell.status_label }}</span>
+                  {% if cell.entry_count %}
+                    <span class="calendar-entry-count">{{ cell.entry_count }} entr{{ cell.entry_count|pluralize:'y,ies' }}</span>
+                  {% endif %}
+                </a>
+              {% else %}
+                <span class="calendar-day calendar-day-empty" role="gridcell" aria-hidden="true"></span>
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% endfor %}
+      </div>
+      {% if not has_sugar_limit %}
+        <p class="calendar-note">No daily sugar limit is set. Logged days are shown without a limit status.</p>
+      {% endif %}
+    </section>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js" defer></script>
+  <script src="{% static 'js/stats/stats.js' %}" defer></script>
+{% endblock %}

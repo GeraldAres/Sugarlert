@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Food history · {{ day|date:"F j, Y" }} · SugarLert{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/stats/stats.css' %}">
+{% endblock %}
+
+{% block content %}
+  <div class="stats-page day-detail-page">
+    <header class="page-header stats-page-header">
+      <div>
+        <p class="eyebrow">Daily food log</p>
+        <h1>{{ day|date:"l, F j, Y" }}</h1>
+      </div>
+      <a href="{% url 'stats:stats' %}?month={{ day|date:'Y-m' }}" class="btn btn-ghost">Back to statistics</a>
+    </header>
+
+    <section class="day-total-grid" aria-label="Daily totals">
+      <article class="stats-summary-card">
+        <span>Total sugar</span>
+        <strong>{{ totals.sugar|floatformat:1 }}g</strong>
+      </article>
+      <article class="stats-summary-card">
+        <span>Total calories</span>
+        <strong>{{ totals.calories|floatformat:0 }}</strong>
+        <small>kcal</small>
+      </article>
+      <article class="stats-summary-card">
+        <span>Food entries</span>
+        <strong>{{ totals.entry_count }}</strong>
+      </article>
+    </section>
+
+    <section class="stats-panel" aria-labelledby="day-entries-title">
+      <div class="stats-panel-heading">
+        <div>
+          <p class="eyebrow">History</p>
+          <h2 id="day-entries-title">Food entries</h2>
+        </div>
+        <a href="{% url 'home:home' %}?add_food=1" class="btn btn-secondary">Log food</a>
+      </div>
+
+      {% if entries %}
+        <ul class="day-entry-list">
+          {% for entry in entries %}
+            <li class="day-entry-card">
+              <div class="day-entry-heading">
+                <div>
+                  <h3>{{ entry.food_name }}</h3>
+                  <p>{{ entry.get_meal_type_display }} · {{ entry.serving_size|floatformat:-1 }} {{ entry.get_serving_unit_display }}</p>
+                </div>
+                <time datetime="{{ entry.eaten_at|date:'c' }}">{{ entry.eaten_at|date:"g:i A" }}</time>
+              </div>
+              <dl class="day-entry-nutrients">
+                <div><dt>Sugar</dt><dd>{{ entry.sugar_g|floatformat:1 }}g</dd></div>
+                <div><dt>Calories</dt><dd>{% if entry.calories != None %}{{ entry.calories|floatformat:0 }} kcal{% else %}Not recorded{% endif %}</dd></div>
+              </dl>
+              {% if entry.notes %}<p class="day-entry-notes">{{ entry.notes }}</p>{% endif %}
+              <form
+                method="post"
+                action="{% url 'stats:delete_entry' day=day|date:'Y-m-d' entry_id=entry.pk %}"
+                class="delete-entry-form"
+                onsubmit="return confirm('Delete this food entry? This cannot be undone.');"
+              >
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Delete entry</button>
+              </form>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <div class="day-empty-state">
+          <h3>No food logged on this day</h3>
+          <p>Entries you log will appear here in your history.</p>
+          <a href="{% url 'home:home' %}?add_food=1" class="btn btn-secondary">Log your first food</a>
+        </div>
+      {% endif %}
+    </section>
+  </div>
+{% endblock %}

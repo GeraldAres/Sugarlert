@@ -30,6 +30,7 @@
 
         <nav class="main-nav" aria-label="Primary navigation">
           <a href="{% url 'home:home' %}" class="nav-link {% if request.resolver_match.namespace == 'home' %}active{% endif %}">Home</a>
+          <a href="{% url 'stats:stats' %}" class="nav-link {% if request.resolver_match.namespace == 'stats' %}active{% endif %}">Stats</a>
           <a href="{% url 'profile:profile' %}" class="nav-link {% if request.resolver_match.namespace == 'profile' %}active{% endif %}">Profile</a>
           <a href="{% url 'user_settings:settings' %}" class="nav-link {% if request.resolver_match.namespace == 'user_settings' %}active{% endif %}">Settings</a>
         </nav>

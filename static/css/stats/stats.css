@@ -1,0 +1,622 @@
+.stats-page {
+  display: grid;
+  gap: 24px;
+  min-width: 0;
+  width: 100%;
+}
+
+.stats-page-header {
+  margin-bottom: 0;
+}
+
+.stats-page-header > div {
+  min-width: 0;
+}
+
+.stats-page-header h1 {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: clamp(1.7rem, 4vw, 2.6rem);
+  letter-spacing: -0.035em;
+}
+
+.stats-intro {
+  max-width: 58ch;
+  margin: 9px 0 0;
+  color: var(--color-text-secondary);
+  line-height: 1.55;
+}
+
+.stats-page .btn-primary,
+.stats-page .btn-secondary {
+  width: auto;
+  flex: 0 0 auto;
+  border-radius: 999px;
+}
+
+.stats-page .btn-primary {
+  padding: 0.85rem 1.2rem;
+  background: var(--color-primary);
+}
+
+.stats-page .btn-secondary {
+  padding: 0.75rem 1rem;
+  background: var(--color-primary);
+}
+
+.stats-empty-state,
+.stats-panel,
+.stats-summary-card {
+  min-width: 0;
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  background: var(--color-surface);
+  box-shadow: 0 10px 28px rgba(12, 36, 33, 0.05);
+}
+
+.stats-empty-state {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 20px;
+}
+
+.stats-empty-state h2,
+.stats-empty-state p {
+  margin: 0;
+}
+
+.stats-empty-state h2 {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+}
+
+.stats-empty-state p {
+  margin-top: 5px;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.stats-empty-icon {
+  display: grid;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border-radius: 14px;
+  background: var(--color-primary-soft);
+  color: var(--color-primary-dark);
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.stats-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.stats-summary-card {
+  display: grid;
+  align-content: start;
+  gap: 7px;
+  padding: 17px;
+}
+
+.stats-summary-card > span {
+  color: var(--color-text-secondary);
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.stats-summary-card strong {
+  color: var(--color-primary-dark);
+  font-family: var(--font-heading);
+  font-size: clamp(1.25rem, 2vw, 1.7rem);
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.stats-summary-card small {
+  color: var(--color-text-secondary);
+  font-size: 0.72rem;
+  line-height: 1.35;
+}
+
+.stats-panel {
+  padding: 22px;
+}
+
+.stats-panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.stats-panel-heading .eyebrow {
+  margin-bottom: 5px;
+}
+
+.stats-panel-heading h2 {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: clamp(1.2rem, 2vw, 1.55rem);
+  letter-spacing: -0.025em;
+}
+
+.range-toggle {
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-surface-soft);
+}
+
+.range-button {
+  min-height: 38px;
+  padding: 0.5rem 0.75rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.range-button.is-active {
+  background: var(--color-primary);
+  color: white;
+}
+
+.chart-status {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+}
+
+.chart-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid rgba(179, 73, 46, 0.2);
+  border-radius: 14px;
+  background: var(--color-error-bg);
+  color: var(--color-error);
+}
+
+.chart-error[hidden],
+.stats-chart-grid[hidden] {
+  display: none;
+}
+
+.chart-error p {
+  margin: 0;
+  line-height: 1.45;
+}
+
+.chart-error .btn {
+  width: auto;
+  flex: 0 0 auto;
+}
+
+.stats-chart-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.chart-card {
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  background: var(--color-surface-soft);
+}
+
+.chart-card h3 {
+  margin: 0 0 10px;
+  font-size: 0.92rem;
+}
+
+.chart-card h3 span {
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.chart-canvas-wrap {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  height: 250px;
+}
+
+.chart-canvas-wrap canvas {
+  max-width: 100%;
+}
+
+.month-navigation {
+  display: flex;
+  gap: 8px;
+}
+
+.month-nav-link {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  background: var(--color-surface-soft);
+  color: var(--color-primary-dark);
+  font-size: 1.5rem;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.month-nav-link.is-disabled {
+  opacity: 0.4;
+}
+
+.calendar-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin: 0 0 16px;
+  padding: 0;
+  list-style: none;
+}
+
+.calendar-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-text-secondary);
+  font-size: 0.76rem;
+}
+
+.calendar-legend li span {
+  display: grid;
+  width: 22px;
+  height: 22px;
+  place-items: center;
+  border-radius: 50%;
+  font-weight: 800;
+}
+
+.calendar-grid {
+  display: grid;
+  gap: 6px;
+}
+
+.calendar-week-row {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.calendar-weekday {
+  padding: 6px 2px;
+  color: var(--color-text-secondary);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.calendar-day {
+  display: grid;
+  align-content: start;
+  gap: 5px;
+  min-width: 0;
+  min-height: 88px;
+  padding: 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  color: var(--color-text);
+  text-decoration: none;
+  transition: border-color 150ms ease, transform 150ms ease;
+}
+
+a.calendar-day:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-primary);
+}
+
+.calendar-day.is-today {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 1px;
+}
+
+.calendar-day-number {
+  font-size: 0.87rem;
+  font-weight: 800;
+}
+
+.calendar-day-status,
+.calendar-entry-count {
+  font-size: 0.65rem;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.calendar-day-status {
+  font-weight: 700;
+}
+
+.calendar-entry-count {
+  color: var(--color-text-secondary);
+}
+
+.status-under {
+  background: var(--color-success-bg);
+  color: #236449;
+}
+
+.status-near {
+  background: var(--color-warning-bg);
+  color: #8b520d;
+}
+
+.status-over {
+  background: var(--color-error-bg);
+  color: #913922;
+}
+
+.status-no_entries,
+.status-no_limit,
+.status-none {
+  background: var(--color-surface-soft);
+  color: var(--color-text-secondary);
+}
+
+.calendar-note {
+  margin: 14px 0 0;
+  color: var(--color-text-secondary);
+  font-size: 0.8rem;
+}
+
+.day-total-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.day-entry-list {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.day-entry-card {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  background: var(--color-surface-soft);
+}
+
+.day-entry-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.day-entry-heading h3,
+.day-entry-heading p {
+  margin: 0;
+}
+
+.day-entry-heading h3 {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  overflow-wrap: anywhere;
+}
+
+.day-entry-heading p,
+.day-entry-heading time {
+  margin-top: 4px;
+  color: var(--color-text-secondary);
+  font-size: 0.8rem;
+}
+
+.day-entry-heading time {
+  flex: 0 0 auto;
+}
+
+.day-entry-nutrients {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+}
+
+.day-entry-nutrients div {
+  min-width: 108px;
+  padding: 9px 11px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: white;
+}
+
+.day-entry-nutrients dt {
+  color: var(--color-text-secondary);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+}
+
+.day-entry-nutrients dd {
+  margin: 3px 0 0;
+  color: var(--color-primary-dark);
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.day-entry-notes {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+  overflow-wrap: anywhere;
+}
+
+.delete-entry-form {
+  justify-self: end;
+}
+
+.stats-page .btn-danger {
+  width: auto;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid rgba(179, 73, 46, 0.25);
+  border-radius: 999px;
+  background: var(--color-error-bg);
+  color: var(--color-error);
+}
+
+.day-empty-state {
+  display: grid;
+  justify-items: start;
+  gap: 10px;
+  padding: 18px 0;
+}
+
+.day-empty-state h3,
+.day-empty-state p {
+  margin: 0;
+}
+
+.day-empty-state p {
+  color: var(--color-text-secondary);
+}
+
+.stats-page :is(a, button):focus-visible {
+  outline: 3px solid rgba(20, 92, 84, 0.4);
+  outline-offset: 3px;
+}
+
+@media (max-width: 900px) {
+  .stats-summary-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .stats-page {
+    gap: 18px;
+  }
+
+  .stats-page-header {
+    align-items: flex-start;
+  }
+
+  .stats-page-header .btn {
+    padding: 0.7rem 0.85rem;
+    font-size: 0.78rem;
+  }
+
+  .stats-empty-state {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    padding: 16px;
+  }
+
+  .stats-empty-state > div {
+    flex: 1 1 calc(100% - 64px);
+  }
+
+  .stats-empty-state .btn {
+    margin-left: 62px;
+  }
+
+  .stats-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .stats-summary-card {
+    padding: 13px;
+  }
+
+  .stats-summary-card > span {
+    font-size: 0.72rem;
+  }
+
+  .stats-panel {
+    padding: 16px 12px;
+  }
+
+  .stats-panel-heading {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .range-toggle {
+    width: 100%;
+  }
+
+  .range-button {
+    flex: 1;
+    padding-inline: 0.45rem;
+  }
+
+  .stats-chart-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .chart-canvas-wrap {
+    height: 220px;
+  }
+
+  .calendar-grid {
+    gap: 3px;
+  }
+
+  .calendar-day {
+    min-height: 64px;
+    padding: 5px 3px;
+    border-radius: 8px;
+  }
+
+  .calendar-day-status,
+  .calendar-entry-count {
+    font-size: 0.57rem;
+  }
+
+  .calendar-weekday {
+    font-size: 0.63rem;
+  }
+
+  .day-total-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .day-entry-card {
+    padding: 14px;
+  }
+}
+
+@media (max-width: 380px) {
+  .stats-page-header {
+    flex-direction: column;
+  }
+
+  .calendar-day {
+    min-height: 58px;
+  }
+
+  .calendar-day-status,
+  .calendar-entry-count {
+    font-size: 0.52rem;
+  }
+}

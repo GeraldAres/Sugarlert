@@ -14,7 +14,10 @@
         <p class="eyebrow">Patient dashboard</p>
         <h1>Welcome back, {{ user.first_name|default:user.username }}</h1>
       </div>
-      <a href="{% url 'profile:profile' %}" class="btn btn-primary">View profile</a>
+      <div class="home-header-actions">
+        <a href="{% url 'stats:stats' %}" class="btn btn-secondary">View stats</a>
+        <a href="{% url 'profile:profile' %}" class="btn btn-primary">View profile</a>
+      </div>
     </div>
 
     <section class="status-grid" aria-label="Today's nutrition totals">
